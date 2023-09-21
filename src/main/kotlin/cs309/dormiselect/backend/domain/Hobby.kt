@@ -5,16 +5,11 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 
-
 @Entity
-class Account(
-    @Id @GeneratedValue(strategy = GenerationType.AUTO) var id: String,
-    var password: String,
-    var type: Type,
-
+class Hobby(
+    @Id @GeneratedValue(strategy = GenerationType.AUTO) var hobbyId: String,
+    var hobbyName: String,
+    var hobbyPrivacy: Boolean
 ) {
 
-    enum class Type {
-        USER, ADMINISTRATOR
-    }
 }
