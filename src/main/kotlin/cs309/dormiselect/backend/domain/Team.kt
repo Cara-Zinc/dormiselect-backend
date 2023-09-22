@@ -11,9 +11,8 @@ class Team(
     var leaderId: String,
     var teamSize: Int,
     var state: State,
-    var isCheckIn: Boolean
 ) {
     enum class State{
-        FULL,NOTFULL
+        RECRUTING,FULL
     }
 }

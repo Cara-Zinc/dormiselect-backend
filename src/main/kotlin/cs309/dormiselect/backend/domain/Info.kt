@@ -13,9 +13,11 @@ class Info(
     var gender: Gender,
     var bedtime: Timestamp,
     var wakeUpTime: Timestamp,
-    var hobbyId: String
+    var isPrivate: Boolean
+
 ) {
     enum class Gender{
-        MALE,FEMALE,PREFER_NOT_TO_SAY
+        MALE,FEMALE
+        // PREFER_NOT_TO_SAY can be added into the enum class but since gender-mixed accommodation is restricted, we cancel this gender
     }
 }

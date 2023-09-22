@@ -7,9 +7,8 @@ import jakarta.persistence.Id
 
 @Entity
 class Hobby(
-    @Id @GeneratedValue(strategy = GenerationType.AUTO) var hobbyId: String,
-    var hobbyName: String,
-    var hobbyPrivacy: Boolean
+    @Id @GeneratedValue(strategy = GenerationType.AUTO) var studnetId: String,
+    var hobby: String
 ) {
 
 }

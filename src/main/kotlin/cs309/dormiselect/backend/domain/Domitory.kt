@@ -9,11 +9,9 @@ import jakarta.persistence.Id
 class Domitory (
     @Id @GeneratedValue(strategy = GenerationType.AUTO) var dormId: String,
     var zoneId: String,
-    var size: RoomType,
+    var size: Int,
     var buildingId: String,
     var description: String
 ){
-    enum class RoomType{
-        SINGLE,DOUBLE,TRIPLE,QUADRUPLE,OTHER
-    }
+
 }
