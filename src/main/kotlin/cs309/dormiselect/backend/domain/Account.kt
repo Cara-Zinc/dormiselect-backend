@@ -11,8 +11,8 @@ class Account(
     @Id @GeneratedValue(strategy = GenerationType.AUTO) val id: String,
     var password: String,
     var type: Type,
-
-    ) {
+    var name: String,
+) {
 
     enum class Type {
         USER, ADMINISTRATOR

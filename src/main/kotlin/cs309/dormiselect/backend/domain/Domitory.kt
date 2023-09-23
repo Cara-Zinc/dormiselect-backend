@@ -1,15 +1,12 @@
 package cs309.dormiselect.backend.domain
 
-import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
+import jakarta.persistence.*
 
 @Entity
-class Domitory (
-    @Id @GeneratedValue(strategy = GenerationType.AUTO) var dormId: String,
+class Domitory(
+    @Id @GeneratedValue(strategy = GenerationType.AUTO) val id: String,
     var zoneId: String,
     var size: Int,
     var buildingId: String,
-    var description: String
+    @OneToMany val comments: MutableList<Comments>
 )

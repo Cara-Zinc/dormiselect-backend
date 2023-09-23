@@ -1,17 +1,14 @@
 package cs309.dormiselect.backend.domain
 
-import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
+import jakarta.persistence.*
 
 @Entity
 class Team(
     @Id @GeneratedValue(strategy = GenerationType.AUTO) val id: String,
-    var leaderId: String,
+    @OneToOne var leaderId: Student,
     var state: State,
 ) {
-    val teamSize: Int
+    val size: Int
         get() {
             TODO()
         }
