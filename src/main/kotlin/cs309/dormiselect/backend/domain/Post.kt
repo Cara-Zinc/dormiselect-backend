@@ -14,5 +14,4 @@ class Post (
     var content: String,
     var commentRoomId: String,
 
-){
-}
+    )

@@ -7,12 +7,16 @@ import jakarta.persistence.Id
 
 @Entity
 class Team(
-    @Id @GeneratedValue(strategy = GenerationType.AUTO) var studentId:String,
+    @Id @GeneratedValue(strategy = GenerationType.AUTO) val id: String,
     var leaderId: String,
-    var teamSize: Int,
     var state: State,
 ) {
-    enum class State{
-        RECRUTING,FULL
+    val teamSize: Int
+        get() {
+            TODO()
+        }
+
+    enum class State {
+        RECRUITING, NOT_RECRUITING, FULL
     }
 }

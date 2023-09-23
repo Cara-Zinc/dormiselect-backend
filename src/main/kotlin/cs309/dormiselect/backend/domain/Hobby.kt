@@ -9,6 +9,4 @@ import jakarta.persistence.Id
 class Hobby(
     @Id @GeneratedValue(strategy = GenerationType.AUTO) var studnetId: String,
     var hobby: String
-) {
-
-}
+)

@@ -8,11 +8,11 @@ import jakarta.persistence.Id
 
 @Entity
 class Account(
-    @Id @GeneratedValue(strategy = GenerationType.AUTO) var id: String,
+    @Id @GeneratedValue(strategy = GenerationType.AUTO) val id: String,
     var password: String,
     var type: Type,
 
-) {
+    ) {
 
     enum class Type {
         USER, ADMINISTRATOR

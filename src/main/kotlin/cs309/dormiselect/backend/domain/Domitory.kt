@@ -12,6 +12,4 @@ class Domitory (
     var size: Int,
     var buildingId: String,
     var description: String
-){
-
-}
+)
