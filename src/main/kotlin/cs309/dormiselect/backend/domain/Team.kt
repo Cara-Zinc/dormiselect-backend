@@ -4,8 +4,11 @@ import jakarta.persistence.*
 
 @Entity
 class Team(
-    @Id @GeneratedValue(strategy = GenerationType.AUTO) val id: String,
-    @OneToOne var leaderId: Student,
+    @Id @GeneratedValue val id: Int,
+    @OneToOne(optional = false) var leader: Student,
+    @OneToMany val members: MutableList<Student>,
+    @OneToOne var domitory: Domitory?,
+    @OneToMany(orphanRemoval = true) val requests: MutableList<TeamJoinRequest> = mutableListOf(),
     var state: State,
 ) {
     val size: Int
