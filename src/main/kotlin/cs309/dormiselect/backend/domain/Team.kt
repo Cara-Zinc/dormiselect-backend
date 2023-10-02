@@ -8,6 +8,7 @@ class Team(
     @OneToOne(optional = false) var leader: Student,
     @OneToMany val members: MutableList<Student>,
     @OneToOne var domitory: Domitory?,
+    @ManyToMany val favorites: MutableList<Domitory> = mutableListOf(),
     @OneToMany(orphanRemoval = true) val requests: MutableList<TeamJoinRequest> = mutableListOf(),
     var state: State,
 ) {
