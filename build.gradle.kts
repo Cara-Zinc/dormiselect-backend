@@ -6,6 +6,7 @@ plugins {
 	kotlin("jvm") version "1.9.10"
 	kotlin("plugin.spring") version "1.9.10"
 	kotlin("plugin.jpa") version "1.9.10"
+	kotlin("plugin.allopen") version "1.9.10"
 }
 
 group = "cs309"
@@ -13,6 +14,10 @@ version = "0.0.1-SNAPSHOT"
 
 java {
 	sourceCompatibility = JavaVersion.VERSION_17
+}
+
+allOpen {
+	annotation("jakarta.persistence.Entity")
 }
 
 repositories {

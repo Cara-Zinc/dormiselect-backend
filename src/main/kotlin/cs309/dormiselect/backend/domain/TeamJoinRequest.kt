@@ -1,12 +1,12 @@
 package cs309.dormiselect.backend.domain
 
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.Id
-import jakarta.persistence.OneToOne
+import jakarta.persistence.*
 
+@Entity
 class TeamJoinRequest(
     @Id @GeneratedValue val id: Int,
     @OneToOne(optional = false) val student: Student,
+    @ManyToOne(optional = false) val team: Team,
     val info: String
 ) {
     fun accept() {
@@ -14,6 +14,10 @@ class TeamJoinRequest(
     }
 
     fun decline() {
+        TODO()
+    }
+
+    fun cancel() {
         TODO()
     }
 }
