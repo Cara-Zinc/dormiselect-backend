@@ -8,11 +8,11 @@ import jakarta.persistence.OneToOne
 
 @Entity
 class Account(
-    @Id @GeneratedValue val id: Int,
     var name: String,
     var password: String,
-    var type: Type = Type.USER,
-    @OneToOne(orphanRemoval = true) var student: Student? = null
+    val type: Type = Type.USER,
+    @OneToOne(orphanRemoval = true) val student: Student? = null,
+    @Id @GeneratedValue var id: Int? = null
 ) {
 
     enum class Type {

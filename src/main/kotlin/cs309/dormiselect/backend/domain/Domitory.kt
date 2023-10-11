@@ -7,10 +7,10 @@ import jakarta.persistence.OneToMany
 
 @Entity
 class Domitory(
-    @Id @GeneratedValue val id: Int,
     var zoneId: String,
     var size: Int,
     var buildingId: String,
     var info: String = "",
-    @OneToMany(orphanRemoval = true) val comments: MutableList<Comment> = mutableListOf()
+    @OneToMany(orphanRemoval = true) val comments: MutableList<Comment> = mutableListOf(),
+    @Id @GeneratedValue var id: Int? = null
 )

@@ -8,13 +8,13 @@ import java.sql.Timestamp
 
 @Entity
 class Student(
-    @Id @GeneratedValue val id: Int,
     @OneToOne(optional = false) val account: Account,
     var gender: Gender,
     var bedtime: Timestamp,
     var wakeUpTime: Timestamp,
     val hobbies: MutableSet<String> = mutableSetOf(),
     @OneToOne(orphanRemoval = true) var joinRequest: TeamJoinRequest? = null,
+    @Id @GeneratedValue val id: Int? = null,
 ) {
     enum class Gender {
         MALE, FEMALE

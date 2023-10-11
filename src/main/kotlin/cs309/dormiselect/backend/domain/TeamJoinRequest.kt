@@ -4,10 +4,10 @@ import jakarta.persistence.*
 
 @Entity
 class TeamJoinRequest(
-    @Id @GeneratedValue val id: Int,
     @OneToOne(optional = false) val student: Student,
     @ManyToOne(optional = false) val team: Team,
-    val info: String
+    val info: String,
+    @Id @GeneratedValue val id: Int? = null,
 ) {
     fun accept() {
         TODO()
