@@ -1,21 +1,16 @@
 package cs309.dormiselect.backend.domain
 
-import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.Id
-import jakarta.persistence.OneToOne
+import jakarta.persistence.*
 
 
 @Entity
-class Account(
+@Inheritance(strategy = InheritanceType.JOINED)
+abstract class Account(
     var name: String,
     var password: String,
-    val type: Type = Type.USER,
-    @OneToOne(orphanRemoval = true) val student: Student? = null,
-    @Id @GeneratedValue var id: Int? = null
 ) {
-
-    enum class Type {
-        USER, ADMINISTRATOR
-    }
+    @Id
+    @GeneratedValue
+    var id: Int? = null
+        protected set
 }

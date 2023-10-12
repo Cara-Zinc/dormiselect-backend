@@ -7,8 +7,12 @@ class TeamJoinRequest(
     @OneToOne(optional = false) val student: Student,
     @ManyToOne(optional = false) val team: Team,
     val info: String,
-    @Id @GeneratedValue val id: Int? = null,
 ) {
+    @Id
+    @GeneratedValue
+    var id: Int? = null
+        protected set
+
     fun accept() {
         TODO()
     }

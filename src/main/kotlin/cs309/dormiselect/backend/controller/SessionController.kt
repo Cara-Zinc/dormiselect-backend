@@ -1,7 +1,8 @@
-package cs309.dormiselect.backend.rest
+package cs309.dormiselect.backend.controller
 
 import cs309.dormiselect.backend.repo.AccountRepo
 import cs309.dormiselect.backend.repo.SessionRepo
+import cs309.dormiselect.backend.repo.createSession
 import jakarta.servlet.http.Cookie
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.http.HttpStatus

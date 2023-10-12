@@ -8,9 +8,15 @@ import java.sql.Timestamp
 
 @Entity
 class Comment(
+    @ManyToOne(optional = false) val dormitory: Dormitory,
     @ManyToOne(optional = false) val author: Account,
     var content: String,
-    @ManyToOne(optional = false) val domitory: Domitory,
-    var postTime: Timestamp = Timestamp(System.currentTimeMillis()),
-    @Id @GeneratedValue var id: Int? = null,
-)
+) {
+    @Id
+    @GeneratedValue
+    var id: Int? = null
+        protected set
+
+    var postTime: Timestamp = Timestamp(System.currentTimeMillis())
+        protected set
+}

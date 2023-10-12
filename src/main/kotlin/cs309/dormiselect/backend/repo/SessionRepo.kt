@@ -6,19 +6,19 @@ import org.springframework.data.repository.CrudRepository
 import java.sql.Timestamp
 import kotlin.jvm.optionals.getOrNull
 
-interface SessionRepo : CrudRepository<Session, String> {
-    fun findAccount(token: String): Account? {
-        val session = findById(token).getOrNull() ?: return null
-        if (session.expireTime < Timestamp(System.currentTimeMillis())) {
-            delete(session)
-            return null
-        }
-        return session.account
-    }
+interface SessionRepo : CrudRepository<Session, String>
 
-    fun createSession(account: Account, persistTime: Long): Session {
-        val session = Session(account, persistTime)
-        save(session)
-        return session
+fun SessionRepo.findSession(token: String): Account? {
+    val session = findById(token).getOrNull() ?: return null
+    if (session.expireTime < Timestamp(System.currentTimeMillis())) {
+        delete(session)
+        return null
     }
+    return session.account
+}
+
+fun SessionRepo.createSession(account: Account, persistTime: Long): Session {
+    val session = Session(account, persistTime)
+    save(session)
+    return session
 }

@@ -1,23 +1,24 @@
 package cs309.dormiselect.backend.domain
 
 import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.Id
 import jakarta.persistence.OneToOne
 import java.sql.Timestamp
 
 @Entity
 class Student(
-    @OneToOne(optional = false) val account: Account,
+    name: String,
+    password: String,
     var gender: Gender,
-    var bedtime: Timestamp,
-    var wakeUpTime: Timestamp,
-    val hobbies: MutableSet<String> = mutableSetOf(),
-    @OneToOne(orphanRemoval = true) var joinRequest: TeamJoinRequest? = null,
-    @Id @GeneratedValue val id: Int? = null,
-) {
+) : Account(name, password) {
     enum class Gender {
         MALE, FEMALE
         // PREFER_NOT_TO_SAY can be added into the enum class but since gender-mixed accommodation is restricted, we cancel this gender
     }
+
+    var bedTime: Timestamp? = null
+    var wakeUpTime: Timestamp? = null
+    val hobbies: MutableSet<String> = mutableSetOf()
+
+    @OneToOne(orphanRemoval = true)
+    var joinRequest: TeamJoinRequest? = null
 }
