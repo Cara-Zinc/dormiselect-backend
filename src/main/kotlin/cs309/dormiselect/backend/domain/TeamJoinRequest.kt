@@ -10,8 +10,7 @@ class TeamJoinRequest(
 ) {
     @Id
     @GeneratedValue
-    var id: Int? = null
-        protected set
+    val id: Int? = null
 
     fun accept() {
         TODO()

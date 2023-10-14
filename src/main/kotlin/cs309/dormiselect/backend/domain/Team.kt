@@ -9,8 +9,7 @@ class Team(
 ) {
     @Id
     @GeneratedValue
-    var id: Int? = null
-        protected set
+    val id: Int? = null
 
     @OneToMany
     @Suppress("LeakingThis")
@@ -27,10 +26,7 @@ class Team(
 
     var state: State = State.RECRUITING
 
-    val size: Int
-        get() {
-            TODO()
-        }
+    val size get() = members.size
 
     enum class State {
         RECRUITING, NOT_RECRUITING, FULL

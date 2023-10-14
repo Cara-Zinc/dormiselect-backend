@@ -14,8 +14,7 @@ class Dormitory(
 ) {
     @Id
     @GeneratedValue
-    var id: Int? = null
-        protected set
+    val id: Int? = null
 
     @OneToMany(orphanRemoval = true)
     val comments: MutableList<Comment> = mutableListOf()

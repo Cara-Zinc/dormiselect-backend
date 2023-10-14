@@ -14,9 +14,7 @@ class Comment(
 ) {
     @Id
     @GeneratedValue
-    var id: Int? = null
-        protected set
+    val id: Int? = null
 
-    var postTime: Timestamp = Timestamp(System.currentTimeMillis())
-        protected set
+    val postTime: Timestamp = Timestamp(System.currentTimeMillis())
 }
