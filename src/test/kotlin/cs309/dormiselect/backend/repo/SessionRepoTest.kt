@@ -9,7 +9,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
 @DataJpaTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@AutoConfigureTestDatabase
 class SessionRepoTest(
     @Autowired val accountRepo: AccountRepo,
     @Autowired val sessionRepo: SessionRepo,

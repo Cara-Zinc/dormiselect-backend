@@ -17,8 +17,4 @@ fun SessionRepo.findSession(token: String): Account? {
     return session.account
 }
 
-fun SessionRepo.createSession(account: Account, persistTime: Long): Session {
-    val session = Session(account, persistTime)
-    save(session)
-    return session
-}
+fun SessionRepo.createSession(account: Account, persistTime: Long) = Session(account, persistTime).also { save(it) }
