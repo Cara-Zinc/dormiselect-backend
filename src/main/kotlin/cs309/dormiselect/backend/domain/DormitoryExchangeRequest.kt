@@ -8,18 +8,18 @@ class DormitoryExchangeRequest(
     @OneToOne(optional = false) val team1: Team,
     @OneToOne(optional = false) val team2: Team,
 
-
 ) {
     @Id
     @GeneratedValue
     val id: Int? = null
     var state: State = State.WAITING
+
     /*
      Some requirements from the front end partners:
 
-     - An exchange request happens between two teams who already get their dormitories.
-     - Remind an exchange requests need to be approved by BOTH teachers who are in charge of the buildings where these two teams live.
-     - Usually, a building has one teacher in charge, but teachers can change during the request
+     - An exchange request happens between two teams who already get their dormitories in building A,B.
+     - Remind an exchange requests need to be approved by BOTH teachers who are in charge of the A,B buildings where these two teams live.
+     - A building may have many teachers in charge. The team who live in building A only need approval from one of them in A and one of teachers in charge of B
      */
 
 
