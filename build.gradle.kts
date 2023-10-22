@@ -34,7 +34,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 
-    implementation("org.postgresql:postgresql:42.6.0")
+	implementation("com.h2database:h2:2.2.224")
 
     testImplementation(kotlin("test"))
 }
