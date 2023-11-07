@@ -10,22 +10,22 @@ class TeamJoinRequest(
     @ManyToOne(optional = false) val student: Student,
     @ManyToOne(optional = false) val team: Team,
     val info: String,
-
 ) {
     @Id
     @GeneratedValue
     val id: Int? = null
     var state: State = State.WAITING
     fun accept() {
-        TODO()
+        team.members += student
+        state = State.ACCEPT
     }
 
     fun decline() {
-        TODO()
+        state = State.DECLINE
     }
 
     fun cancel() {
-        TODO()
+        state = State.CANCELLED
     }
 
     enum class State {
