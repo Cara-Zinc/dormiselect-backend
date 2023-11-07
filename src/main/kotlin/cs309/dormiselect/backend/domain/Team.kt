@@ -21,9 +21,6 @@ class Team(
     @OneToOne
     var dormitory: Dormitory? = null
 
-    @OneToMany(orphanRemoval = true)
-    val requests: MutableList<TeamJoinRequest> = mutableListOf()
-
     var state: State = State.RECRUITING
 
     val size get() = members.size

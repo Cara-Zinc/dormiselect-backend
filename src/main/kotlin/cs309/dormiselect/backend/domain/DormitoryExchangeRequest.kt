@@ -1,18 +1,42 @@
 package cs309.dormiselect.backend.domain
 
-import jakarta.persistence.*
+import jakarta.persistence.Entity
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.Id
 
 
 @Entity
 class DormitoryExchangeRequest(
-    @OneToOne(optional = false) val team1: Team,
-    @OneToOne(optional = false) val team2: Team,
-
+    val team1: Team,
+    val team2: Team,
 ) {
     @Id
     @GeneratedValue
     val id: Int? = null
-    var state: State = State.WAITING
+    val state: State
+        get() {
+            if (approved1 == null || approved2 == null) {
+                return State.WAITING
+            }
+            if (approved1 == true && approved2 == true) {
+                return State.APPROVED
+            }
+            return State.REJECTED
+        }
+
+    var approved1: Boolean? = null
+        protected set
+
+    var approved2: Boolean? = null
+        protected set
+
+    fun approve1(approve: Boolean) {
+        approved1 = approve
+    }
+
+    fun approve2(approve: Boolean) {
+        approved2 = approve
+    }
 
     /*
      Some requirements from the front end partners:

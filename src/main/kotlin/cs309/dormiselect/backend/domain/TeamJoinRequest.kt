@@ -1,10 +1,13 @@
 package cs309.dormiselect.backend.domain
 
-import jakarta.persistence.*
+import jakarta.persistence.Entity
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.Id
+import jakarta.persistence.ManyToOne
 
 @Entity
 class TeamJoinRequest(
-    @OneToOne(optional = false) val student: Student,
+    @ManyToOne(optional = false) val student: Student,
     @ManyToOne(optional = false) val team: Team,
     val info: String,
 
@@ -26,6 +29,6 @@ class TeamJoinRequest(
     }
 
     enum class State {
-        ACCEPT, DECLINE, WAITING
+        ACCEPT, DECLINE, WAITING, CANCELLED
     }
 }

@@ -1,7 +1,6 @@
 package cs309.dormiselect.backend.domain
 
 import jakarta.persistence.Entity
-import jakarta.persistence.OneToOne
 import java.sql.Timestamp
 
 @Entity
@@ -18,7 +17,4 @@ class Student(
     var bedTime: Timestamp? = null
     var wakeUpTime: Timestamp? = null
     val hobbies: MutableSet<String> = mutableSetOf()
-
-    @OneToOne(orphanRemoval = true)
-    var joinRequest: TeamJoinRequest? = null
 }
