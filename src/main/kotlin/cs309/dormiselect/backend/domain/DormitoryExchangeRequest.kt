@@ -3,12 +3,13 @@ package cs309.dormiselect.backend.domain
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.Id
+import jakarta.persistence.ManyToOne
 
 
 @Entity
 class DormitoryExchangeRequest(
-    val team1: Team,
-    val team2: Team,
+    @ManyToOne(optional = false) val team1: Team,
+    @ManyToOne(optional = false) val team2: Team,
 ) {
     @Id
     @GeneratedValue

@@ -1,15 +1,27 @@
 package cs309.dormiselect.backend.domain
 
 import jakarta.persistence.*
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 abstract class Account(
     var name: String,
-    var password: String,
+    password0: String,
 ) {
     @Id
     @GeneratedValue
     val id: Int? = null
+
+    var password: String = "{bcrypt}${encoder.encode(password0)}"
+        set(value) {
+            field = "{bcrypt}${encoder.encode(value)}"
+        }
+
+    fun checkPassword(passwordCompared: String) = encoder.matches(passwordCompared.removePrefix("{bcrypt}"), password)
+
+    companion object {
+        private val encoder = BCryptPasswordEncoder()
+    }
 }
