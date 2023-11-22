@@ -1,10 +1,10 @@
 package cs309.dormiselect.backend.data
 
-class RestResponse<out T> private constructor(val code: Int, val message: String, val data: T?) {
+class RestResponse<out T> private constructor(val code: Int, val message: String, val data: T) {
     companion object {
         fun <T> success(data: T, message: String = "Success.") = RestResponse(0, message, data)
 
-        fun fail(code: Int, message: String) = RestResponse<Any>(code, message, null)
+        fun fail(code: Int, message: String) = RestResponse<Any?>(code, message, null)
     }
 
     override fun equals(other: Any?): Boolean {
