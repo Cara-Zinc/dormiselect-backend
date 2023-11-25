@@ -38,8 +38,7 @@ class StudentController(
         @PathVariable dormitoryId: String,
         @RequestBody comment: Comment,
     ): ResponseEntity<String> {
-        val dormitoryOptional =
-            dormitoryRepo.findById(dormitoryId) ?: return ResponseEntity.status(404).body("Dormitory not found")
+        dormitoryRepo.findById(dormitoryId) ?: return ResponseEntity.status(404).body("Dormitory not found")
 
         commentRepo.save(comment)
         return ResponseEntity.ok("Post comment successfully")
