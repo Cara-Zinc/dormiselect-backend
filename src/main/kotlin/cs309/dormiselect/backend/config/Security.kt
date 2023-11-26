@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.invoke
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
@@ -17,7 +18,7 @@ import org.springframework.security.web.session.HttpSessionEventPublisher
 
 @Configuration
 @EnableWebSecurity
-class Security(@Autowired val accountRepo: AccountRepo) {
+private class Security(@Autowired val accountRepo: AccountRepo) {
     private fun Account.asUserDetails() = object : UserDetails {
         override fun getAuthorities() = setOf(SimpleGrantedAuthority(this@asUserDetails::class.simpleName))
 
@@ -32,6 +33,8 @@ class Security(@Autowired val accountRepo: AccountRepo) {
         override fun isCredentialsNonExpired() = true
 
         override fun isEnabled() = true
+
+        val account = this@asUserDetails
     }
 
     @Bean
@@ -67,3 +70,9 @@ class Security(@Autowired val accountRepo: AccountRepo) {
         return http.build()
     }
 }
+
+@Target(AnnotationTarget.VALUE_PARAMETER, AnnotationTarget.TYPE)
+@Retention(AnnotationRetention.RUNTIME)
+@MustBeDocumented
+@AuthenticationPrincipal(expression = "account")
+annotation class CurrentAccount
