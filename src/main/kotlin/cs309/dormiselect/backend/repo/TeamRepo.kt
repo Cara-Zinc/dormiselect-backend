@@ -13,7 +13,8 @@ interface TeamRepo : CrudRepository<Team, Int>{
 
     fun findByFavoritesContaining(favoriteDormitory: Dormitory): List<Team>
 
-    fun findBySize(size: Int): List<Team>
+    //Size does not actually exist in Team database, because it is a getter!
+    //fun findBySize(size: Int): List<Team>
 
     fun findByLeaderName(name: String): Team?
 

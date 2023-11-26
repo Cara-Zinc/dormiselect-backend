@@ -1,20 +1,14 @@
 package cs309.dormiselect.backend.controller
 
 import cs309.dormiselect.backend.data.RestResponse
-import cs309.dormiselect.backend.domain.Administrator
 import cs309.dormiselect.backend.domain.Comment
 import cs309.dormiselect.backend.domain.Dormitory
 import cs309.dormiselect.backend.domain.Team
-import cs309.dormiselect.backend.repo.AccountRepo
 import cs309.dormiselect.backend.repo.CommentRepo
 import cs309.dormiselect.backend.repo.DormitoryRepo
 import cs309.dormiselect.backend.repo.TeamRepo
-import org.apache.commons.logging.LogFactory
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import org.springframework.web.server.ResponseStatusException
-import java.util.*
+import kotlin.jvm.optionals.getOrElse
 
 @RestController
 @RequestMapping("/api/student")
@@ -35,13 +29,15 @@ class StudentController(
 
     @PostMapping("/dorm/{dormitoryId}")
     fun commentOnDorm(
-        @PathVariable dormitoryId: String,
+        @PathVariable dormitoryId: Int,
         @RequestBody comment: Comment,
-    ): ResponseEntity<String> {
-        dormitoryRepo.findById(dormitoryId) ?: return ResponseEntity.status(404).body("Dormitory not found")
+    ): RestResponse<Any?> {
+        val dormitory =
+            dormitoryRepo.findById(dormitoryId)
+                .getOrElse { return RestResponse.fail(404, "Dormitory not found") }
 
         commentRepo.save(comment)
-        return ResponseEntity.ok("Post comment successfully")
+        return RestResponse.success(null, "Post comment successfully")
     }
 
 }

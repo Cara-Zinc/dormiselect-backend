@@ -1,6 +1,6 @@
 package cs309.dormiselect.backend.controller
 
-import cs309.dormiselect.backend.data.RegisterRequestDto
+import cs309.dormiselect.backend.config.CurrentAccount
 import cs309.dormiselect.backend.data.RestResponse
 import cs309.dormiselect.backend.domain.Account
 import cs309.dormiselect.backend.domain.Administrator
@@ -41,7 +41,7 @@ class AccountController(val accountRepo: AccountRepo) {
     }
 
     @GetMapping("/hello")
-    fun hello() = RestResponse.success("Hello, world!")
+    fun hello(@CurrentAccount account: Account) = RestResponse.success("Hello, ${account.name}!")
 
     @GetMapping("/error")
     fun error(): Nothing {
