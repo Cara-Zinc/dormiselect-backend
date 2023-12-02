@@ -2,9 +2,9 @@ package cs309.dormiselect.backend.data
 
 class RestResponse<out T> private constructor(val code: Int, val message: String, val data: T) {
     companion object {
-        fun <T> success(data: T, message: String = "Success.") = RestResponse(0, message, data)
+        fun <T> success(data: T, message: String = "Success.") = RestResponse(200, message, data)
 
-        fun fail(code: Int, message: String) = RestResponse<Any?>(code, message, null)
+        fun <T> fail(code: Int, message: String) = RestResponse<T?>(code, message, null)
     }
 
     override fun equals(other: Any?): Boolean {
@@ -29,3 +29,5 @@ class RestResponse<out T> private constructor(val code: Int, val message: String
 
     fun copy() = RestResponse(code, message, data)
 }
+
+fun <T> T?.asRestResponse(message: String = "Success.") = RestResponse.success(this, message)

@@ -5,9 +5,10 @@ import java.sql.Timestamp
 
 @Entity
 class Student(
+    val studentId: Long,
     name: String,
     password: String,
-    var gender: Gender?
+    var gender: Gender,
 ) : Account(name, password) {
 
     enum class Gender {

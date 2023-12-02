@@ -6,8 +6,6 @@ import jakarta.persistence.*
 class Teacher(
     name: String,
     password: String,
-    var buildingInCharge: String,
 ) : Account(name, password) {
-
-
+    var buildingInCharge: String? = null
 }

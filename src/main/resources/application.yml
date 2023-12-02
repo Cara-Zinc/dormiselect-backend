@@ -1,6 +1,8 @@
 spring:
   datasource:
-    url: jdbc:h2:./dormiselect
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: checker
+
   jpa:
     hibernate:
       ddl-auto: create
