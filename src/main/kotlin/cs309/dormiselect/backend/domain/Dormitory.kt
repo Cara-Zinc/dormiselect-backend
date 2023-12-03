@@ -7,6 +7,7 @@ import jakarta.persistence.OneToMany
 
 @Entity
 class Dormitory(
+    var roomId: Int,
     var zoneId: Int,
     var size: Int,
     var buildingId: Int,
