@@ -7,9 +7,9 @@ import jakarta.persistence.OneToMany
 
 @Entity
 class Dormitory(
-    var zoneId: String,
+    var zoneId: Int,
     var size: Int,
-    var buildingId: String,
+    var buildingId: Int,
     var info: String = "",
 ) {
     @Id
