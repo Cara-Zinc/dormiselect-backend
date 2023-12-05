@@ -16,7 +16,7 @@ class AccountRepoTest(
 
     @Test
     fun testInsert() {
-        val student = Student("student", "114514", Student.Gender.MALE)
+        val student = Student(114514, "student", "114514", Student.Gender.MALE)
         student.hobbies += setOf("eat", "drink", "play", "sleep")
         student.bedTime = Timestamp.valueOf("2021-01-01 23:00:00")
         student.wakeUpTime = Timestamp.valueOf("2021-01-02 07:00:00")
@@ -25,8 +25,8 @@ class AccountRepoTest(
         accountRepo.save(student)
         accountRepo.save(admin)
 
-        val savedStudent = accountRepo.findByNameAndPassword("student", "114514")
-        val savedAdmin = accountRepo.findByNameAndPassword("admin", "1919810")
+        val savedStudent = accountRepo.findByName("student")
+        val savedAdmin = accountRepo.findByName("admin")
 
         assert(savedStudent != null && savedStudent is Student)
         assert(savedAdmin != null && savedAdmin is Administrator)
