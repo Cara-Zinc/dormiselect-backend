@@ -10,11 +10,12 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 class ExceptionHandling : ResponseEntityExceptionHandler() {
     @ExceptionHandler(ResponseStatusException::class)
     fun handleResponseStatusException(e: ResponseStatusException) =
-        RestResponse.fail(e.statusCode.value(), e.reason ?: "Unknown error.")
+        RestResponse.fail<Any>(e.statusCode.value(), e.reason ?: "Unknown error.")
 
     @ExceptionHandler(AccessDeniedException::class)
-    fun handleAccessDeniedException(e: AccessDeniedException) = RestResponse.fail(403, e.message ?: "Unknown error.")
+    fun handleAccessDeniedException(e: AccessDeniedException) =
+        RestResponse.fail<Any>(403, e.message ?: "Unknown error.")
 
     @ExceptionHandler(Exception::class)
-    fun handleException(e: Exception) = RestResponse.fail(-1, e.message ?: "Unknown error.")
+    fun handleException(e: Exception) = RestResponse.fail<Any>(-1, e.message ?: "Unknown error.")
 }

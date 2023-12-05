@@ -8,7 +8,9 @@ import org.springframework.data.repository.CrudRepository
 
 interface AccountRepo : CrudRepository<Account, Int> {
     fun findByName(name: String): Account?
-    fun findById(id: String): Account?
+
+    //No! Don't! ID is Int, not String!
+    //fun findById(id: String): Account?
     fun findByNameAndPassword(name: String, password: String): Account?
 }
 
