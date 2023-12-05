@@ -1,6 +1,9 @@
 package cs309.dormiselect.backend.config
 
 import cs309.dormiselect.backend.domain.Account
+import cs309.dormiselect.backend.domain.Administrator
+import cs309.dormiselect.backend.domain.Student
+import cs309.dormiselect.backend.domain.Teacher
 import cs309.dormiselect.backend.repo.AccountRepo
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
@@ -20,7 +23,21 @@ import org.springframework.security.web.session.HttpSessionEventPublisher
 @EnableWebSecurity
 private class Security(@Autowired val accountRepo: AccountRepo) {
     private fun Account.asUserDetails() = object : UserDetails {
-        override fun getAuthorities() = setOf(SimpleGrantedAuthority(this@asUserDetails::class.simpleName))
+        override fun getAuthorities() = buildSet {
+            add(SimpleGrantedAuthority("account"))
+
+            if (this@asUserDetails is Student || this@asUserDetails is Teacher || this@asUserDetails is Administrator) {
+                add(SimpleGrantedAuthority("student"))
+            }
+
+            if (this@asUserDetails is Teacher || this@asUserDetails is Administrator) {
+                add(SimpleGrantedAuthority("teacher"))
+            }
+
+            if (this@asUserDetails is Administrator) {
+                add(SimpleGrantedAuthority("administrator"))
+            }
+        }
 
         override fun getUsername() = name
 
