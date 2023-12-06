@@ -34,7 +34,11 @@ class AccountController(
             return
         }
 
-        val password = UUID.randomUUID().toString()
+        val password = if (System.getenv("DEBUG") == null) {
+            UUID.randomUUID().toString()
+        } else {
+            "114514"
+        }
 
         val account = Administrator("root", password)
         accountRepo.save(account)
