@@ -8,15 +8,22 @@ import cs309.dormiselect.backend.repo.AccountRepo
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.authentication.ProviderManager
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.invoke
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
+import org.springframework.security.crypto.factory.PasswordEncoderFactories
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository
 import org.springframework.security.web.session.HttpSessionEventPublisher
 
 @Configuration
@@ -60,7 +67,25 @@ private class Security(@Autowired val accountRepo: AccountRepo) {
     }
 
     @Bean
+    fun passwordEncoder() = PasswordEncoderFactories.createDelegatingPasswordEncoder()!!
+
+    @Bean
+    fun authenticationManager(
+        userDetailsService: UserDetailsService,
+        passwordEncoder: PasswordEncoder
+    ): AuthenticationManager {
+        val authenticationProvider = DaoAuthenticationProvider()
+        authenticationProvider.setUserDetailsService(userDetailsService)
+        authenticationProvider.setPasswordEncoder(passwordEncoder)
+
+        return ProviderManager(authenticationProvider)
+    }
+
+    @Bean
     fun httpSessionEventPublisher() = HttpSessionEventPublisher()
+
+    @Bean
+    fun securityContextHolderStrategy() = SecurityContextHolder.getContextHolderStrategy()!!
 
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
@@ -71,6 +96,13 @@ private class Security(@Autowired val accountRepo: AccountRepo) {
                 authorize("/api/teacher/**", hasAuthority("Teacher"))
                 authorize("/api/administrator/**", hasAuthority("Administrator"))
                 authorize(anyRequest, permitAll)
+            }
+
+            csrf {
+                csrfTokenRepository = CookieCsrfTokenRepository.withHttpOnlyFalse()
+                if (System.getenv("CSRF_DISABLE") != null) {
+                    disable()
+                }
             }
 
             formLogin {

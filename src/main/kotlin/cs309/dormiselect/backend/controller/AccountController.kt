@@ -60,15 +60,17 @@ class AccountController(
     }
 
     @PostMapping("/register")
-    fun register(@RequestBody request: RegisterRequestDto): RestResponse<Any?>{
+    fun register(@RequestBody request: RegisterRequestDto): RestResponse<Any?> {
 
-        if(accountRepo.findByName(request.username)!=null){
-            return RestResponse.fail(404,"This username already exist!")
+        if (accountRepo.findByName(request.username) != null) {
+            return RestResponse.fail(404, "This username already exist!")
         }
-        val account = when(request.type){
-            "Student"->accountRepo.newStudent(request.id,request.username,request.password,request.gender)
+        val account = when (request.type) {
+            "Student" -> accountRepo.newStudent(request.id, request.username, request.password, request.gender)
             //TODO: handling logic of Teacher and Administrator account
-            else -> {return RestResponse.fail(404,"Invalid account type!")}
+            else -> {
+                return RestResponse.fail(404, "Invalid account type!")
+            }
         }
 
 
