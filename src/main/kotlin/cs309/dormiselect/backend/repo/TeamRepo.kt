@@ -23,3 +23,7 @@ interface TeamRepo : CrudRepository<Team, Int>{
     //no need to implement pre-declared function findAll(): List<Team>
 
 }
+
+fun TeamRepo.newTeam(leader: Student, name: String = "${leader.name}'s Team") = Team(leader, name).also { save(it) }
+
+fun TeamRepo.findTeamStudentBelongTo(student: Student) = findByMembersContaining(student).firstOrNull()

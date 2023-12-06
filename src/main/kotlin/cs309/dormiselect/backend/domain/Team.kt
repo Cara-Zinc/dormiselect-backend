@@ -6,6 +6,7 @@ import jakarta.persistence.*
 @Entity
 class Team(
     @OneToOne(optional = false) var leader: Student,
+    var name: String = "${leader.name}'s Team",
 ) {
     @Id
     @GeneratedValue

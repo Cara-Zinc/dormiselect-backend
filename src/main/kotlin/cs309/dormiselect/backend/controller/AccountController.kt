@@ -3,25 +3,30 @@ package cs309.dormiselect.backend.controller
 import cs309.dormiselect.backend.config.CurrentAccount
 import cs309.dormiselect.backend.data.RegisterRequestDto
 import cs309.dormiselect.backend.data.RestResponse
+import cs309.dormiselect.backend.data.asRestResponse
+import cs309.dormiselect.backend.data.message.MessageQueryDto
+import cs309.dormiselect.backend.data.message.MessageSendDto
 import cs309.dormiselect.backend.domain.Account
 import cs309.dormiselect.backend.domain.Administrator
-import cs309.dormiselect.backend.domain.Student
+import cs309.dormiselect.backend.domain.PrivateMessage
 import cs309.dormiselect.backend.repo.AccountRepo
+import cs309.dormiselect.backend.repo.PrivateMessageRepo
+import cs309.dormiselect.backend.repo.newMessage
 import cs309.dormiselect.backend.repo.newStudent
 import org.apache.commons.logging.LogFactory
 import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
+import java.sql.Timestamp
 import java.util.*
 import kotlin.jvm.optionals.getOrElse
+
 @RestController
 @RequestMapping("/api/account")
-class AccountController(val accountRepo: AccountRepo) {
+class AccountController(
+    val accountRepo: AccountRepo,
+    val privateMessageRepo: PrivateMessageRepo,
+) {
     private val logger = LogFactory.getLog(javaClass)
 
     private fun tryInitRootAccount() {
@@ -49,6 +54,7 @@ class AccountController(val accountRepo: AccountRepo) {
     fun error(): Nothing {
         throw ResponseStatusException(HttpStatus.I_AM_A_TEAPOT, "I'm a teapot.")
     }
+
     @PostMapping("/register")
     fun register(@RequestBody request: RegisterRequestDto): RestResponse<Any?>{
 
@@ -63,5 +69,31 @@ class AccountController(val accountRepo: AccountRepo) {
 
 
         return RestResponse.success("Account register successfully")
+    }
+
+    @PostMapping("message/query")
+    fun getMessage(
+        @CurrentAccount account: Account,
+        @RequestBody body: MessageQueryDto
+    ): RestResponse<List<PrivateMessage>?> {
+        val result = if (body.receiverId != null) {
+            privateMessageRepo.findAllBySenderAndReceiverId(account, body.receiverId)
+        } else {
+            privateMessageRepo.findAllBySenderOrReceiver(account, account)
+        }
+
+        return result.filter {
+            it.timestamp >= Timestamp(body.timeFrom ?: 0) && (it.timestamp <= Timestamp(body.timeTo ?: Long.MAX_VALUE))
+        }.asRestResponse()
+    }
+
+    @PostMapping("message/send")
+    fun sendMessage(@CurrentAccount account: Account, @RequestBody body: MessageSendDto): RestResponse<Any?> {
+        val receiver =
+            accountRepo.findById(body.receiverId ?: throw IllegalArgumentException("receiver id is required"))
+                .getOrElse { throw IllegalArgumentException("receiver not found") }
+
+        privateMessageRepo.newMessage(account, receiver, body.message)
+        return RestResponse.success(null, "message sent")
     }
 }

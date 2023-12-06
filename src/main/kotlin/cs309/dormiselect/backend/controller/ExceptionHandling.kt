@@ -16,6 +16,14 @@ class ExceptionHandling : ResponseEntityExceptionHandler() {
     fun handleAccessDeniedException(e: AccessDeniedException) =
         RestResponse.fail<Any>(403, e.message ?: "Unknown error.")
 
+    @ExceptionHandler(IllegalArgumentException::class)
+    fun handleIllegalArgumentException(e: IllegalArgumentException) =
+        RestResponse.fail<Any>(400, e.message ?: "Unknown error.")
+
+    @ExceptionHandler(IllegalStateException::class)
+    fun handleIllegalStateException(e: IllegalStateException) =
+        RestResponse.fail<Any>(400, e.message ?: "Unknown error.")
+
     @ExceptionHandler(Exception::class)
     fun handleException(e: Exception) = RestResponse.fail<Any>(-1, e.message ?: "Unknown error.")
 }
