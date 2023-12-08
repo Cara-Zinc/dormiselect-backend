@@ -6,7 +6,6 @@ import cs309.dormiselect.backend.data.asRestResponse
 import cs309.dormiselect.backend.domain.Announcement
 import cs309.dormiselect.backend.domain.Comment
 import cs309.dormiselect.backend.domain.Dormitory
-import cs309.dormiselect.backend.domain.Team
 import cs309.dormiselect.backend.domain.account.Account
 import cs309.dormiselect.backend.repo.*
 import org.springframework.web.bind.annotation.*
@@ -21,10 +20,6 @@ class StudentController(
     private val studentRepo: StudentRepo,
     private val announcementRepo: AnnouncementRepo,
 ) {
-    @GetMapping("/team")
-    fun listAllTeam(): RestResponse<List<Team>?> {
-        return teamRepo.findAll().toList().asRestResponse()
-    }
 
     @GetMapping("/dorm")
     fun listAllDorm(): RestResponse<List<Dormitory>?> {

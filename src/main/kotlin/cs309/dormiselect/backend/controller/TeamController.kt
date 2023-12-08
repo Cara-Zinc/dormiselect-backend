@@ -5,6 +5,7 @@ import cs309.dormiselect.backend.data.RestResponse
 import cs309.dormiselect.backend.data.asRestResponse
 import cs309.dormiselect.backend.data.message.MessageQueryDto
 import cs309.dormiselect.backend.data.message.MessageSendDto
+import cs309.dormiselect.backend.domain.Team
 import cs309.dormiselect.backend.domain.TeamMessage
 import cs309.dormiselect.backend.domain.account.Account
 import cs309.dormiselect.backend.domain.account.Administrator
@@ -14,16 +15,20 @@ import cs309.dormiselect.backend.repo.TeamMessageRepo
 import cs309.dormiselect.backend.repo.TeamRepo
 import cs309.dormiselect.backend.repo.findTeamStudentBelongTo
 import cs309.dormiselect.backend.repo.newMessage
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import java.sql.Timestamp
 
-@RestController("/api/student/team")
+@RestController
+@RequestMapping("/api/student/team")
 class TeamController(
     val teamRepo: TeamRepo,
     val teamMessageRepo: TeamMessageRepo,
 ) {
+    @GetMapping("/list")
+    fun listAllTeam(): RestResponse<List<Team>?> {
+        return teamRepo.findAll().toList().asRestResponse()
+    }
+
     @PostMapping("/message/query")
     fun getMessage(
         @CurrentAccount account: Account,
