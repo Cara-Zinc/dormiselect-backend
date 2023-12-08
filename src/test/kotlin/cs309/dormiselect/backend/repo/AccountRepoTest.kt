@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import java.sql.Timestamp
+import kotlin.test.assertEquals
 
 @DataJpaTest
 @AutoConfigureTestDatabase
@@ -36,5 +37,9 @@ class AccountRepoTest(
             println("I'm an admin.")
             println("My name is $name and my password is $password")
         }
+
+        savedStudent.hobbies += "music"
+
+        assertEquals(savedStudent, accountRepo.findByName("student"))
     }
 }

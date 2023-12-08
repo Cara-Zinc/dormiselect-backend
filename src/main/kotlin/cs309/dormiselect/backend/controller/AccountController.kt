@@ -9,10 +9,8 @@ import cs309.dormiselect.backend.data.message.MessageSendDto
 import cs309.dormiselect.backend.domain.PrivateMessage
 import cs309.dormiselect.backend.domain.account.Account
 import cs309.dormiselect.backend.domain.account.Administrator
-import cs309.dormiselect.backend.repo.AccountRepo
-import cs309.dormiselect.backend.repo.PrivateMessageRepo
-import cs309.dormiselect.backend.repo.newMessage
-import cs309.dormiselect.backend.repo.newStudent
+import cs309.dormiselect.backend.domain.notification.Notification
+import cs309.dormiselect.backend.repo.*
 import org.apache.commons.logging.LogFactory
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
@@ -26,6 +24,7 @@ import kotlin.jvm.optionals.getOrElse
 class AccountController(
     val accountRepo: AccountRepo,
     val privateMessageRepo: PrivateMessageRepo,
+    val notificationRepo: NotificationRepo,
 ) {
     private val logger = LogFactory.getLog(javaClass)
 
@@ -101,5 +100,50 @@ class AccountController(
 
         privateMessageRepo.newMessage(account, receiver, body.message)
         return RestResponse.success(null, "message sent")
+    }
+
+    @GetMapping("notification/all")
+    fun getAllNotification(@CurrentAccount account: Account): RestResponse<List<Notification>?> {
+        return notificationRepo.findAllValidByReceiverId(account.id!!).asRestResponse()
+    }
+
+    @GetMapping("notification/unread")
+    fun getUnreadNotification(@CurrentAccount account: Account): RestResponse<List<Notification>?> {
+        return notificationRepo.findAllValidAndNotReadByReceiverId(account.id!!).asRestResponse()
+    }
+
+    @GetMapping("notification/undone")
+    fun getUndoneNotification(@CurrentAccount account: Account): RestResponse<List<Notification>?> {
+        return notificationRepo.findAllValidAndNotDoneByReceiverId(account.id!!).asRestResponse()
+    }
+
+    @PostMapping("notification/read")
+    fun markNotificationAsRead(@CurrentAccount account: Account, @RequestBody body: List<Long>?): RestResponse<Any?> {
+        val notifications = if (body == null) {
+            notificationRepo.findAllValidAndNotReadByReceiverId(account.id!!)
+        } else {
+            notificationRepo.findAllValidByReceiverIdAndIdIn(account.id!!, body)
+        }
+
+        notifications.forEach {
+            it.read = true
+        }
+
+        return RestResponse.success(null, "notification marked as read")
+    }
+
+    @PostMapping("notification/done")
+    fun markNotificationAsDone(@CurrentAccount account: Account, @RequestBody body: List<Long>?): RestResponse<Any?> {
+        val notifications = if (body == null) {
+            notificationRepo.findAllValidAndNotDoneByReceiverId(account.id!!)
+        } else {
+            notificationRepo.findAllValidByReceiverIdAndIdIn(account.id!!, body)
+        }
+
+        notifications.forEach {
+            it.done = true
+        }
+
+        return RestResponse.success(null, "notification marked as done")
     }
 }
