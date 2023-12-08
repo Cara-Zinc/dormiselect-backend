@@ -1,6 +1,6 @@
 package cs309.dormiselect.backend.data
 
-import cs309.dormiselect.backend.domain.Student
+import cs309.dormiselect.backend.domain.account.Student
 
 data class RegisterRequestDto(
     val id: Long,

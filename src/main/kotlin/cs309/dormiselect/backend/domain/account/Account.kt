@@ -1,4 +1,4 @@
-package cs309.dormiselect.backend.domain
+package cs309.dormiselect.backend.domain.account
 
 import jakarta.persistence.*
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder

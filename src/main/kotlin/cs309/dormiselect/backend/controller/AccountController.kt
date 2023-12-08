@@ -6,9 +6,9 @@ import cs309.dormiselect.backend.data.RestResponse
 import cs309.dormiselect.backend.data.asRestResponse
 import cs309.dormiselect.backend.data.message.MessageQueryDto
 import cs309.dormiselect.backend.data.message.MessageSendDto
-import cs309.dormiselect.backend.domain.Account
-import cs309.dormiselect.backend.domain.Administrator
 import cs309.dormiselect.backend.domain.PrivateMessage
+import cs309.dormiselect.backend.domain.account.Account
+import cs309.dormiselect.backend.domain.account.Administrator
 import cs309.dormiselect.backend.repo.AccountRepo
 import cs309.dormiselect.backend.repo.PrivateMessageRepo
 import cs309.dormiselect.backend.repo.newMessage

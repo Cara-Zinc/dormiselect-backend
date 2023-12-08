@@ -1,5 +1,6 @@
 package cs309.dormiselect.backend.domain
 
+import cs309.dormiselect.backend.domain.account.Account
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.Id

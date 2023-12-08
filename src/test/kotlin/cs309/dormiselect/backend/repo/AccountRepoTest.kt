@@ -1,7 +1,7 @@
 package cs309.dormiselect.backend.repo
 
-import cs309.dormiselect.backend.domain.Administrator
-import cs309.dormiselect.backend.domain.Student
+import cs309.dormiselect.backend.domain.account.Administrator
+import cs309.dormiselect.backend.domain.account.Student
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
@@ -13,17 +13,13 @@ import java.sql.Timestamp
 class AccountRepoTest(
     @Autowired val accountRepo: AccountRepo,
 ) {
-
     @Test
     fun testInsert() {
-        val student = Student(114514, "student", "114514", Student.Gender.MALE)
-        student.hobbies += setOf("eat", "drink", "play", "sleep")
+        val student = accountRepo.newStudent(114514, "student", "114514", Student.Gender.MALE)
+        student.hobbies += setOf("sing", "jump", "rap", "basketball")
         student.bedTime = Timestamp.valueOf("2021-01-01 23:00:00")
         student.wakeUpTime = Timestamp.valueOf("2021-01-02 07:00:00")
-        val admin = Administrator("admin", "1919810")
-
-        accountRepo.save(student)
-        accountRepo.save(admin)
+        val admin = accountRepo.newAdministrator("admin", "1919810")
 
         val savedStudent = accountRepo.findByName("student")
         val savedAdmin = accountRepo.findByName("admin")

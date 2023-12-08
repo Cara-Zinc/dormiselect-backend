@@ -1,9 +1,9 @@
 package cs309.dormiselect.backend.repo
 
-import cs309.dormiselect.backend.domain.Account
-import cs309.dormiselect.backend.domain.Administrator
-import cs309.dormiselect.backend.domain.Student
-import cs309.dormiselect.backend.domain.Teacher
+import cs309.dormiselect.backend.domain.account.Account
+import cs309.dormiselect.backend.domain.account.Administrator
+import cs309.dormiselect.backend.domain.account.Student
+import cs309.dormiselect.backend.domain.account.Teacher
 import org.springframework.data.repository.CrudRepository
 
 interface AccountRepo : CrudRepository<Account, Int> {

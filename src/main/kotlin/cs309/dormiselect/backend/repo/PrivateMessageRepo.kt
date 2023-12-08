@@ -1,7 +1,7 @@
 package cs309.dormiselect.backend.repo
 
-import cs309.dormiselect.backend.domain.Account
 import cs309.dormiselect.backend.domain.PrivateMessage
+import cs309.dormiselect.backend.domain.account.Account
 import org.springframework.data.repository.CrudRepository
 
 interface PrivateMessageRepo : CrudRepository<PrivateMessage, Int> {

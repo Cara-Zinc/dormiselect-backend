@@ -5,7 +5,11 @@ import cs309.dormiselect.backend.data.RestResponse
 import cs309.dormiselect.backend.data.asRestResponse
 import cs309.dormiselect.backend.data.message.MessageQueryDto
 import cs309.dormiselect.backend.data.message.MessageSendDto
-import cs309.dormiselect.backend.domain.*
+import cs309.dormiselect.backend.domain.TeamMessage
+import cs309.dormiselect.backend.domain.account.Account
+import cs309.dormiselect.backend.domain.account.Administrator
+import cs309.dormiselect.backend.domain.account.Student
+import cs309.dormiselect.backend.domain.account.Teacher
 import cs309.dormiselect.backend.repo.TeamMessageRepo
 import cs309.dormiselect.backend.repo.TeamRepo
 import cs309.dormiselect.backend.repo.findTeamStudentBelongTo

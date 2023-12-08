@@ -1,5 +1,6 @@
 package cs309.dormiselect.backend.domain
 
+import cs309.dormiselect.backend.domain.account.Student
 import jakarta.persistence.*
 
 

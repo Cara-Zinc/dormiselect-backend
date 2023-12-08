@@ -1,6 +1,6 @@
-package cs309.dormiselect.backend.domain
+package cs309.dormiselect.backend.domain.account
 
-import jakarta.persistence.*
+import jakarta.persistence.Entity
 
 @Entity
 class Teacher(
