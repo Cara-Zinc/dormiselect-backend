@@ -32,18 +32,18 @@ import org.springframework.security.web.session.HttpSessionEventPublisher
 private class Security(@Autowired val accountRepo: AccountRepo) {
     private fun Account.asUserDetails() = object : UserDetails {
         override fun getAuthorities() = buildSet {
-            add(SimpleGrantedAuthority("account"))
+            add(SimpleGrantedAuthority("Account"))
 
             if (this@asUserDetails is Student || this@asUserDetails is Teacher || this@asUserDetails is Administrator) {
-                add(SimpleGrantedAuthority("student"))
+                add(SimpleGrantedAuthority("Student"))
             }
 
             if (this@asUserDetails is Teacher || this@asUserDetails is Administrator) {
-                add(SimpleGrantedAuthority("teacher"))
+                add(SimpleGrantedAuthority("Teacher"))
             }
 
             if (this@asUserDetails is Administrator) {
-                add(SimpleGrantedAuthority("administrator"))
+                add(SimpleGrantedAuthority("Administrator"))
             }
         }
 
