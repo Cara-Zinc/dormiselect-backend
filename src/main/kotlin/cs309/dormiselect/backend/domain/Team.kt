@@ -23,7 +23,18 @@ class Team(
     @OneToOne
     var dormitory: Dormitory? = null
 
-    var state: State = State.RECRUITING
+    var recruiting = true
+    var maxSize = 4
+    val state: State
+        get() {
+            if (!recruiting) {
+                return State.NOT_RECRUITING
+            }
+            if (size < maxSize) {
+                return State.RECRUITING
+            }
+            return State.FULL
+        }
 
     val size get() = members.size
 

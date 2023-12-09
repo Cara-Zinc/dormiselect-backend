@@ -7,6 +7,7 @@ import cs309.dormiselect.backend.domain.Announcement
 import cs309.dormiselect.backend.domain.Comment
 import cs309.dormiselect.backend.domain.Dormitory
 import cs309.dormiselect.backend.domain.account.Account
+import cs309.dormiselect.backend.domain.account.Student
 import cs309.dormiselect.backend.repo.*
 import org.springframework.web.bind.annotation.*
 import kotlin.jvm.optionals.getOrElse
@@ -39,19 +40,6 @@ class StudentController(
         return RestResponse.success(null, "Post comment successfully")
     }
 
-    @GetMapping("/favorited")
-    fun listAllFavorite(
-        @CurrentAccount account: Account
-    ): RestResponse<List<Dormitory>?> {
-
-        val student = studentRepo.findByName(account.name)
-        val teamList = teamRepo.findByMembersContaining(student)
-        if (teamList.isEmpty()) {
-            return RestResponse.fail(404, "This student hasn't join any team")
-        }
-        return teamList[0].favorites.asRestResponse()
-    }
-
     @GetMapping("/announcement")
     fun viewAnnouncement(): RestResponse<List<Announcement>?> {
         return announcementRepo.findAll().toList().asRestResponse()
@@ -62,13 +50,9 @@ class StudentController(
         @CurrentAccount account: Account,
         @PathVariable teamId: String,
     ): RestResponse<Any?> {
-        val student = studentRepo.findByName(account.name)
-        val teamList = teamRepo.findByMembersContaining(student)
-        val team = teamList[0]
-        if (team.leader.studentId!=student.studentId){
-            return RestResponse.fail(404,"Current user is not the team leader")
-        }
-        return RestResponse.fail(404,"Don't know the dormitory id")
+        val team =
+            teamRepo.findTeamStudentLeads(account as Student) ?: return RestResponse.fail(403, "You are not a leader.")
+        TODO()
     }
 }
 

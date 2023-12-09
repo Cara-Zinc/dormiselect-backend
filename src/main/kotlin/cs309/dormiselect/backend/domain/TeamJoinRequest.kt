@@ -17,15 +17,27 @@ class TeamJoinRequest(
     val id: Int? = null
     var state: State = State.WAITING
     fun accept() {
+        if (state != State.WAITING) {
+            return
+        }
+
         team.members += student
         state = State.ACCEPT
     }
 
     fun decline() {
+        if (state != State.WAITING) {
+            return
+        }
+
         state = State.DECLINE
     }
 
     fun cancel() {
+        if (state != State.WAITING) {
+            return
+        }
+
         state = State.CANCELLED
     }
 
