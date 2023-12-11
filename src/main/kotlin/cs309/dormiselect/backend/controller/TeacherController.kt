@@ -3,7 +3,6 @@ package cs309.dormiselect.backend.controller
 import cs309.dormiselect.backend.config.CurrentAccount
 import cs309.dormiselect.backend.data.DormitoryDto
 import cs309.dormiselect.backend.data.RestResponse
-import cs309.dormiselect.backend.data.asRestResponse
 import cs309.dormiselect.backend.domain.*
 import cs309.dormiselect.backend.domain.account.Account
 import cs309.dormiselect.backend.domain.account.Student
@@ -13,7 +12,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.web.bind.annotation.*
-import kotlin.jvm.optionals.getOrElse
+
 
 @RestController
 @RequestMapping("/api/teacher")
