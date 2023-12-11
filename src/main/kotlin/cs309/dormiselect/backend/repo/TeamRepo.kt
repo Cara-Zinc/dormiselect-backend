@@ -2,6 +2,8 @@ package cs309.dormiselect.backend.repo
 
 import cs309.dormiselect.backend.domain.Team
 import cs309.dormiselect.backend.domain.account.Student
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.CrudRepository
 
 interface TeamRepo : CrudRepository<Team, Int>{
@@ -17,7 +19,7 @@ interface TeamRepo : CrudRepository<Team, Int>{
     fun findByLeaderId(leaderId: Int): List<Team>
 
     //no need to implement pre-declared function findAll(): List<Team>
-
+    fun findAll(pageable: Pageable): Page<Team>
 }
 
 fun TeamRepo.newTeam(leader: Student, name: String = "${leader.name}'s Team") = Team(leader, name).also { save(it) }

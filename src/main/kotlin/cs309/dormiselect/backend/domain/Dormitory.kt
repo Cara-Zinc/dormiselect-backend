@@ -10,7 +10,7 @@ class Dormitory(
     var roomId: Int,
     var zoneId: Int,
     var size: Int,
-    var buildingId: String,
+    var buildingId: Int,
     var info: String = "",
 ) {
     @Id
