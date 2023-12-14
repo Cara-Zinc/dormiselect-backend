@@ -1,11 +1,13 @@
 package cs309.dormiselect.backend.data
 
+import cs309.dormiselect.backend.domain.account.Student
 import java.sql.Timestamp
 
 data class StudentInfoDto(
-    val studentId:Int,
+    val studentId:Long,
     val name: String,
-    val gender: Gender,
+    val password: String,
+    val gender: Student.Gender,
     var bedTime: Timestamp?,
     var wakeUpTime: Timestamp?,
     var email: String?,
@@ -19,7 +21,3 @@ data class StudentInfoDto(
     val hobbies: MutableSet<String>
 
 )
-enum class Gender {
-    MALE, FEMALE
-    // PREFER_NOT_TO_SAY can be added into the enum class but since gender-mixed accommodation is restricted, we cancel this gender
-}

@@ -19,4 +19,12 @@ class Student(
     var bedTime: Timestamp? = null
     var wakeUpTime: Timestamp? = null
     val hobbies: MutableSet<String> = mutableSetOf()
+    var email: String? = null
+    var telephone: String? = null
+    var department: String? = null
+    var major: String? = null
+    var qq: String? = null
+    var wechat: String? = null
+    var age: Int? = null
+
 }

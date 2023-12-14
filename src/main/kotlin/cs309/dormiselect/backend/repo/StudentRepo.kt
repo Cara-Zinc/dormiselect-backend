@@ -10,4 +10,7 @@ interface StudentRepo : CrudRepository<Student, Int> {
     fun findByName(name: String): Student
 
     fun findAll(pageable: Pageable): Page<Student>
+
+    fun existsByStudentId(studentId: Long): Boolean
 }
+

@@ -1,10 +1,9 @@
 package cs309.dormiselect.backend.controller
 
-import cs309.dormiselect.backend.config.CurrentAccount
 import cs309.dormiselect.backend.data.DormitoryDto
 import cs309.dormiselect.backend.data.RestResponse
+import cs309.dormiselect.backend.data.StudentInfoDto
 import cs309.dormiselect.backend.domain.*
-import cs309.dormiselect.backend.domain.account.Account
 import cs309.dormiselect.backend.domain.account.Student
 import cs309.dormiselect.backend.domain.account.Teacher
 import cs309.dormiselect.backend.repo.*
@@ -19,14 +18,18 @@ import org.springframework.web.bind.annotation.*
 class TeacherController(
     private val studentRepo: StudentRepo,
     private val dormitoryRepo: DormitoryRepo,
+    private val accountRepo: AccountRepo,
+    private val teamRepo: TeamRepo,
+    private val teacherRepo: TeacherRepo,
 ) {
     @GetMapping("/list")
     fun teacherList(
         @RequestBody page: Int,
         @RequestBody pageSize: Int,
     ): RestResponse<List<Teacher>?> {
-        //TODO
-        return RestResponse.success(null, "Success!")
+        val pageable: Pageable = PageRequest.of(page-1,pageSize)
+        val resultPage: Page<Teacher> = teacherRepo.findAll(pageable)
+        return RestResponse.success(resultPage.content, "Return teacher list page $pageSize")
     }
 
     @GetMapping("/team/list")
@@ -34,9 +37,9 @@ class TeacherController(
         @RequestBody page: Int,
         @RequestBody pageSize: Int,
     ): RestResponse<List<Team>?> {
-
-
-        return RestResponse.success(null, "Nothing found")
+        val pageable: Pageable = PageRequest.of(page-1,pageSize)
+        val resultPage: Page<Team> = teamRepo.findAll(pageable)
+        return RestResponse.success(resultPage.content, "Return team list page $pageSize")
     }
 
     @GetMapping("/studentList")
@@ -51,7 +54,6 @@ class TeacherController(
 
     @PostMapping("/dormitory/upload")
     fun uploadDormitory(
-        @CurrentAccount account: Account,
         @RequestBody dorm: DormitoryDto,
     ): RestResponse<Any?> {
         val roomExist = dormitoryRepo.existsByRoomIdAndZoneIdAndBuildingId(dorm.roomId, dorm.zoneId, dorm.buildingId)
@@ -63,6 +65,42 @@ class TeacherController(
         }
 
     }
+
+    @PostMapping("/student/upload")
+    fun uploadStudent(
+        @RequestBody studentInfoDto: StudentInfoDto
+    ): RestResponse<Any?> {
+        val studentExist = studentRepo.existsByStudentId(studentInfoDto.studentId)
+        if (studentExist) {
+            return RestResponse.fail(404, "The studentId you upload already exist")
+        } else {
+            accountRepo.newStudent(
+                studentInfoDto.studentId,
+                studentInfoDto.name,
+                studentInfoDto.password,
+                studentInfoDto.gender
+            )
+            return RestResponse.success(null, "upload student successfully")
+        }
+
+    }
+
+    @PutMapping("/dormitory/edit")
+    fun editDormitory(
+        @RequestBody dormitoryDto: DormitoryDto
+    ): RestResponse<Any?> {
+        //TODO
+        return RestResponse.success(null,"Edit Successfully")
+    }
+
+    @PutMapping("/student/edit")
+    fun editStudentInfo(
+        @RequestBody studentInfoDto: StudentInfoDto
+    ): RestResponse<Any?> {
+
+        return RestResponse.success(null,"Edit Successfully")
+    }
+
 
 
 }
