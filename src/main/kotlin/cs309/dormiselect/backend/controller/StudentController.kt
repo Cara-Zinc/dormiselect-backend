@@ -35,7 +35,7 @@ class StudentController(
         val dormitory =
             dormitoryRepo.findById(dormitoryId)
                 .getOrElse { return RestResponse.fail(404, "Dormitory not found") }
-
+        //TODO commentDto and logic of adding comments
         commentRepo.save(comment)
         return RestResponse.success(null, "Post comment successfully")
     }

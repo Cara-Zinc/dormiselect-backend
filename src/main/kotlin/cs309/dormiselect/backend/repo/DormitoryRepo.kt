@@ -1,6 +1,8 @@
 package cs309.dormiselect.backend.repo
 
 import cs309.dormiselect.backend.domain.Dormitory
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.CrudRepository
 
 interface DormitoryRepo : CrudRepository<Dormitory, Int> {
@@ -10,6 +12,7 @@ interface DormitoryRepo : CrudRepository<Dormitory, Int> {
     //fun findById(dormitoryId: String): Dormitory?
     fun findBySize(size: Int): List<Dormitory>
     fun existsByRoomIdAndZoneIdAndBuildingId(roomId: Int, zoneId: Int, buildingId: Int): Boolean
+    fun findAll(pageable: Pageable): Page<Dormitory>
 
 }
 

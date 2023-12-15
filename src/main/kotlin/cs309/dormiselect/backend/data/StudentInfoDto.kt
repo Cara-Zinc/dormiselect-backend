@@ -4,6 +4,7 @@ import cs309.dormiselect.backend.domain.account.Student
 import java.sql.Timestamp
 
 data class StudentInfoDto(
+    val id: Int,
     val studentId:Long,
     val name: String,
     val password: String,
@@ -12,12 +13,11 @@ data class StudentInfoDto(
     var wakeUpTime: Timestamp?,
     var email: String?,
     var telephone: String?,
-    var department: String,
+    var department: String?,
     var major: String?,
-    val hasJoinTeam: Boolean,
     var qq: String?,
     var wechat: String?,
     var age:Int?,
-    val hobbies: MutableSet<String>
+
 
 )

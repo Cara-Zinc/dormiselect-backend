@@ -23,6 +23,6 @@ class Announcement(
         NORMAL, URGENT, EXTRA_URGENT
     }
     enum class Receiver{
-        ADMINISTRATOR_ONLY, ADMIN_AND_TEACHER, ALL
+        TEACHER,STUDENT,ALL
     }
 }

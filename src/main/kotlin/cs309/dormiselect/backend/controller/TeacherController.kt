@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.web.bind.annotation.*
+import kotlin.jvm.optionals.getOrElse
 
 
 @RestController
@@ -27,7 +28,7 @@ class TeacherController(
         @RequestBody page: Int,
         @RequestBody pageSize: Int,
     ): RestResponse<List<Teacher>?> {
-        val pageable: Pageable = PageRequest.of(page-1,pageSize)
+        val pageable: Pageable = PageRequest.of(page - 1, pageSize)
         val resultPage: Page<Teacher> = teacherRepo.findAll(pageable)
         return RestResponse.success(resultPage.content, "Return teacher list page $pageSize")
     }
@@ -37,19 +38,19 @@ class TeacherController(
         @RequestBody page: Int,
         @RequestBody pageSize: Int,
     ): RestResponse<List<Team>?> {
-        val pageable: Pageable = PageRequest.of(page-1,pageSize)
+        val pageable: Pageable = PageRequest.of(page - 1, pageSize)
         val resultPage: Page<Team> = teamRepo.findAll(pageable)
-        return RestResponse.success(resultPage.content, "Return team list page $pageSize")
+        return RestResponse.success(resultPage.content, "Return team list page $page")
     }
 
-    @GetMapping("/studentList")
+    @GetMapping("/student/list")
     fun viewStudentList(
         @RequestBody page: Int,
         @RequestBody pageSize: Int,
     ): RestResponse<List<Student>?> {
         val pageable: Pageable = PageRequest.of(page - 1, pageSize)
         val resultPage: Page<Student> = studentRepo.findAll(pageable)
-        return RestResponse.success(resultPage.content, "Nothing found")
+        return RestResponse.success(resultPage.content, "Return student list page $page")
     }
 
     @PostMapping("/dormitory/upload")
@@ -85,22 +86,53 @@ class TeacherController(
 
     }
 
-    @PutMapping("/dormitory/edit")
+    @PostMapping("/dormitory/edit")
     fun editDormitory(
         @RequestBody dormitoryDto: DormitoryDto
     ): RestResponse<Any?> {
-        //TODO
-        return RestResponse.success(null,"Edit Successfully")
+        val dormitory = dormitoryRepo.findById(dormitoryDto.id)
+            .getOrElse {
+                return RestResponse.fail(404, "The dormitory you edit is not found in the database")
+            }
+        dormitoryDto.roomId?.let { dormitory.roomId = it }
+        dormitoryDto.zoneId?.let { dormitory.zoneId = it }
+        dormitoryDto.size?.let { dormitory.size = it }
+        dormitoryDto.buildingId?.let { dormitory.buildingId = it }
+        dormitoryDto.info?.let { dormitory.info = it }
+        return RestResponse.success(null, "Edit dormitory info Successfully")
     }
 
-    @PutMapping("/student/edit")
+    @PostMapping("/student/edit")
     fun editStudentInfo(
         @RequestBody studentInfoDto: StudentInfoDto
     ): RestResponse<Any?> {
+        val student = studentRepo.findById(studentInfoDto.id)
+            .getOrElse { return RestResponse.fail(404, "Can not find the student in the database") }
 
-        return RestResponse.success(null,"Edit Successfully")
+        studentInfoDto.bedTime?.let { student.bedTime = it }
+        studentInfoDto.wakeUpTime?.let { student.wakeUpTime = it }
+        studentInfoDto.email?.let { student.email = it }
+        studentInfoDto.telephone?.let { student.telephone = it }
+        studentInfoDto.department?.let { student.department = it }
+        studentInfoDto.major?.let { student.major = it }
+        studentInfoDto.qq?.let { student.qq = it }
+        studentInfoDto.wechat?.let { student.wechat = it }
+        studentInfoDto.age?.let { student.age = it }
+        //TODO handle the logic of adding hobby into hobby list
+
+
+        return RestResponse.success(null, "Edit student info Successfully")
     }
 
+    @GetMapping("/dormitory/list")
+    fun viewDormitoryList(
+        @RequestBody page: Int,
+        @RequestBody pageSize: Int,
+    ): RestResponse<List<Dormitory>?> {
+        val pageable: Pageable = PageRequest.of(page - 1, pageSize)
+        val resultPage: Page<Dormitory> = dormitoryRepo.findAll(pageable)
+        return RestResponse.success(resultPage.content, "Return dormitory list page $page")
+    }
 
 
 }
