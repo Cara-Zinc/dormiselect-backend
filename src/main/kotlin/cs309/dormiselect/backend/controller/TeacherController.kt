@@ -7,6 +7,7 @@ import cs309.dormiselect.backend.domain.*
 import cs309.dormiselect.backend.domain.account.Student
 import cs309.dormiselect.backend.domain.account.Teacher
 import cs309.dormiselect.backend.repo.*
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable

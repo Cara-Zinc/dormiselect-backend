@@ -5,6 +5,6 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.CrudRepository
 
-interface TeacherRepo : CrudRepository<Int, Teacher> {
+interface TeacherRepo : CrudRepository<Teacher,Int> {
     fun findAll(pageable: Pageable): Page<Teacher>
 }
