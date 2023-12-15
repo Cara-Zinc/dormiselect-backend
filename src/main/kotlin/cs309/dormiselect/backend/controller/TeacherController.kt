@@ -94,11 +94,14 @@ class TeacherController(
             .getOrElse {
                 return RestResponse.fail(404, "The dormitory you edit is not found in the database")
             }
-        dormitoryDto.roomId?.let { dormitory.roomId = it }
-        dormitoryDto.zoneId?.let { dormitory.zoneId = it }
-        dormitoryDto.size?.let { dormitory.size = it }
-        dormitoryDto.buildingId?.let { dormitory.buildingId = it }
-        dormitoryDto.info?.let { dormitory.info = it }
+        dormitory.apply {
+            roomId = dormitoryDto.roomId
+            zoneId = dormitoryDto.zoneId
+            size = dormitoryDto.size
+            buildingId = dormitoryDto.buildingId
+            info = dormitoryDto.info
+        }
+
         return RestResponse.success(null, "Edit dormitory info Successfully")
     }
 

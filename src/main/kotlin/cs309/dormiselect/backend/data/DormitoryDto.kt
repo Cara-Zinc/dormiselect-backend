@@ -6,6 +6,6 @@ data class DormitoryDto(
     val zoneId: Int,
     val size: Int,
     val buildingId: Int,
-    val info: String
+    val info: String,
 
 )
