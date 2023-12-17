@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*
 import java.sql.Timestamp
 
 @RestController
-@RequestMapping("/api/student/team")
+@RequestMapping("/resources/student/team")
 class TeamController(
     val studentRepo: StudentRepo,
     val teamRepo: TeamRepo,

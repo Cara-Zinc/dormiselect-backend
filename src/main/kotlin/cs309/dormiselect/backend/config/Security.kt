@@ -8,6 +8,7 @@ import cs309.dormiselect.backend.repo.AccountRepo
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpMethod
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.ProviderManager
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider
@@ -26,6 +27,8 @@ import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler
 import org.springframework.security.web.session.HttpSessionEventPublisher
+import org.springframework.web.cors.CorsConfiguration
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 
 @Configuration
 @EnableWebSecurity
@@ -92,6 +95,7 @@ private class Security(@Autowired val accountRepo: AccountRepo) {
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
         http {
             authorizeHttpRequests {
+                authorize(HttpMethod.OPTIONS, "/**", permitAll)
                 authorize("/api/account/**", authenticated)
                 authorize("/api/student/**", hasAuthority("Student"))
                 authorize("/api/teacher/**", hasAuthority("Teacher"))
@@ -104,6 +108,17 @@ private class Security(@Autowired val accountRepo: AccountRepo) {
                 csrfTokenRequestHandler = CsrfTokenRequestAttributeHandler()
                 if (System.getenv("CSRF_DISABLE") != null) {
                     disable()
+                }
+            }
+
+            cors {
+                configurationSource = UrlBasedCorsConfigurationSource().apply {
+                    registerCorsConfiguration("/**", CorsConfiguration().apply {
+                        allowedOrigins = listOf("http://localhost:7777")
+                        allowedMethods = listOf("GET", "POST")
+                        allowedHeaders = listOf("*")
+                        allowCredentials = true
+                    })
                 }
             }
 

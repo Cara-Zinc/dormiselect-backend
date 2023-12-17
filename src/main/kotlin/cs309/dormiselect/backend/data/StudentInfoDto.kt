@@ -19,5 +19,6 @@ data class StudentInfoDto(
     var wechat: String?,
     var age:Int?,
     var teamName: String?,
+    var hobbies: MutableSet<String>
 
 )

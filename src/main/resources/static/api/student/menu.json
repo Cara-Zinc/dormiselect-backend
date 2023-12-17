@@ -1,0 +1,64 @@
+{
+    "code": 0,
+    "data": {
+        "menu": [
+            {
+                "name": "string",
+                "path": "string",
+                "meta": {
+                    "title": "string",
+                    "icon": "string",
+                    "type": "string"
+                },
+                "component": "string",
+                "children": [
+                    {
+                        "path": "string",
+                        "name": "string",
+                        "meta": {
+                            "title": "string",
+                            "icon": "string",
+                            "type": "string"
+                        },
+                        "component": "string",
+                        "children": [
+                            {
+                                "path": "string",
+                                "name": "string",
+                                "meta": {
+                                    "title": "string",
+                                    "icon": "string",
+                                    "type": "string",
+                                    "fullpage": true,
+                                    "hidden": true,
+                                    "active": "string"
+                                },
+                                "component": "string",
+                                "children": [
+                                    {
+                                        "path": "string",
+                                        "name": "string",
+                                        "meta": {
+                                            "title": "string",
+                                            "hidden": true,
+                                            "active": "string",
+                                            "type": "string"
+                                        },
+                                        "component": "string"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "permissions": [
+            "string"
+        ],
+        "dashboardGrid": [
+            "string"
+        ]
+    },
+    "message": "string"
+}

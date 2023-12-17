@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*
 import kotlin.jvm.optionals.getOrElse
 
 @RestController
-@RequestMapping("/api/student")
+@RequestMapping("/resources/student")
 class StudentController(
     private val teamRepo: TeamRepo,
     private val dormitoryRepo: DormitoryRepo,

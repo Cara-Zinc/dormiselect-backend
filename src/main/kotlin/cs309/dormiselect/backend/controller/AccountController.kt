@@ -146,4 +146,10 @@ class AccountController(
 
         return RestResponse.success(null, "notification marked as done")
     }
+
+    @GetMapping("/userInfo")
+    fun userInfo(@CurrentAccount account: Account): RestResponse<Any?> {
+        return account.asRestResponse("This is user information")
+    }
+
 }

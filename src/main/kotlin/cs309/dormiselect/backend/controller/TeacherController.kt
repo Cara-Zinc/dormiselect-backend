@@ -7,12 +7,10 @@ import cs309.dormiselect.backend.domain.*
 import cs309.dormiselect.backend.domain.account.Student
 import cs309.dormiselect.backend.domain.account.Teacher
 import cs309.dormiselect.backend.repo.*
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.web.bind.annotation.*
-import java.sql.Timestamp
 import kotlin.jvm.optionals.getOrElse
 
 
@@ -142,12 +140,12 @@ class TeacherController(
     @GetMapping("/student/information/form")
     fun viewStudentInfo(
         @RequestParam id: Int
-    ): RestResponse<Any?>{
+    ): RestResponse<Any?> {
         val student = studentRepo.findById(id)
-            .getOrElse { return RestResponse.fail(404,"Id not exist in the database")  }
+            .getOrElse { return RestResponse.fail(404, "Id not exist in the database") }
         val teamList = teamRepo.findByMembersIdContaining(id)
         var teamName: String? = null
-        if(teamList.isNotEmpty()){
+        if (teamList.isNotEmpty()) {
             teamName = teamList[0].name
         }
         val studentInfoDto = StudentInfoDto(
@@ -165,8 +163,9 @@ class TeacherController(
             student.qq,
             student.wechat,
             student.age,
-            teamName
+            teamName,
+            student.hobbies,
         )
-        return RestResponse.success(studentInfoDto,"check for student $id 's information")
+        return RestResponse.success(studentInfoDto, "check for student $id 's information")
     }
 }
