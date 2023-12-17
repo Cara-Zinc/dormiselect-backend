@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.web.bind.annotation.*
+import java.sql.Timestamp
 import kotlin.jvm.optionals.getOrElse
 
 
@@ -138,5 +139,34 @@ class TeacherController(
         return RestResponse.success(resultPage.content, "Return dormitory list page $page")
     }
 
-
+    @GetMapping("/student/information/form")
+    fun viewStudentInfo(
+        @RequestParam id: Int
+    ): RestResponse<Any?>{
+        val student = studentRepo.findById(id)
+            .getOrElse { return RestResponse.fail(404,"Id not exist in the database")  }
+        val teamList = teamRepo.findByMembersIdContaining(id)
+        var teamName: String? = null
+        if(teamList.isNotEmpty()){
+            teamName = teamList[0].name
+        }
+        val studentInfoDto = StudentInfoDto(
+            student.id!!,
+            student.studentId,
+            student.name,
+            student.password,
+            student.gender,
+            student.bedTime,
+            student.wakeUpTime,
+            student.email,
+            student.telephone,
+            student.department,
+            student.major,
+            student.qq,
+            student.wechat,
+            student.age,
+            teamName
+        )
+        return RestResponse.success(studentInfoDto,"check for student $id 's information")
+    }
 }

@@ -18,6 +18,6 @@ data class StudentInfoDto(
     var qq: String?,
     var wechat: String?,
     var age:Int?,
-
+    var teamName: String?,
 
 )

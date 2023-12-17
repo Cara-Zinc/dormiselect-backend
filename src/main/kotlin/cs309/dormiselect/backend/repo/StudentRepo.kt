@@ -6,12 +6,15 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.CrudRepository
 
+
 interface StudentRepo : CrudRepository<Student, Int> {
     fun findByName(name: String): Student
 
     fun findAll(pageable: Pageable): Page<Student>
 
     fun existsByStudentId(studentId: Long): Boolean
+
+
 
 }
 
