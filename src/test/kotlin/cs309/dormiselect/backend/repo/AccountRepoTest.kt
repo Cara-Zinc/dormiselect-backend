@@ -18,8 +18,8 @@ class AccountRepoTest(
     fun testInsert() {
         val student = accountRepo.newStudent(114514, "student", "114514", Student.Gender.MALE)
         student.hobbies += setOf("sing", "jump", "rap", "basketball")
-        student.bedTime = Timestamp.valueOf("2021-01-01 23:00:00")
-        student.wakeUpTime = Timestamp.valueOf("2021-01-02 07:00:00")
+        student.bedTime = Timestamp.valueOf("2021-01-01 23:00:00").toString()
+        student.wakeUpTime = Timestamp.valueOf("2021-01-02 07:00:00").toString()
         val admin = accountRepo.newAdministrator("admin", "1919810")
 
         val savedStudent = accountRepo.findByName("student")

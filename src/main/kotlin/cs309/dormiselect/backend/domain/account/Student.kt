@@ -16,8 +16,8 @@ class Student(
         // PREFER_NOT_TO_SAY can be added into the enum class but since gender-mixed accommodation is restricted, we cancel this gender
     }
 
-    var bedTime: Timestamp? = null
-    var wakeUpTime: Timestamp? = null
+    var bedTime: String? = null
+    var wakeUpTime: String? = null
     val hobbies: MutableSet<String> = mutableSetOf()
     var email: String? = null
     var telephone: String? = null

@@ -4,4 +4,5 @@ import jakarta.persistence.Entity
 
 @Entity
 class Administrator(name: String, password: String) : Account(name, password) {
+    val administratorId: Int? = null
 }

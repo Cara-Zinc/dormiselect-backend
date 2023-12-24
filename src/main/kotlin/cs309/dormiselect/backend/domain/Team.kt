@@ -25,6 +25,7 @@ class Team(
 
     var recruiting = true
     var maxSize = 4
+    var introduction: String? = null
     val state: State
         get() {
             if (!recruiting) {

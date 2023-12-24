@@ -5,6 +5,7 @@ import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.Id
 import jakarta.persistence.ManyToOne
+import java.sql.Timestamp
 
 @Entity
 class TeamJoinRequest(
@@ -15,7 +16,9 @@ class TeamJoinRequest(
     @Id
     @GeneratedValue
     val id: Int? = null
+    val datetime: Timestamp = Timestamp(System.currentTimeMillis())
     var state: State = State.WAITING
+
     fun accept() {
         if (state != State.WAITING) {
             return

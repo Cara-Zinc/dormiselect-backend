@@ -1,6 +1,7 @@
 package cs309.dormiselect.backend.repo
 
 import cs309.dormiselect.backend.domain.Dormitory
+import cs309.dormiselect.backend.domain.account.Student
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.CrudRepository
@@ -16,5 +17,5 @@ interface DormitoryRepo : CrudRepository<Dormitory, Int> {
 
 }
 
-fun DormitoryRepo.newDormitory(roomId: Int, zoneId: Int, size: Int, buildingId: Int, info: String) =
-    Dormitory(roomId, zoneId, size, buildingId, info).also { save(it) }
+fun DormitoryRepo.newDormitory(roomId: Int, zoneId: Int, size: Int, buildingId: Int, gender: Student.Gender,info: String) =
+    Dormitory(roomId, zoneId, size, buildingId, gender, info).also { save(it) }
