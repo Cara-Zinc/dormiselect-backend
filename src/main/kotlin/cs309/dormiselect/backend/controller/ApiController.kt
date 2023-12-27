@@ -38,9 +38,9 @@ class ApiController(
             object {
                 val token = "SUSTech.Administrator.Auth"
                 val userInfo = object {
-                    val userId = "1"
+                    val userId = 1
                     val userName = "Administrator"
-                    val dashboard = "0"
+                    val dashboard = 0
                     val role = listOf("SA", "admin", "Auditor")
                 }
             }.asRestResponse()
