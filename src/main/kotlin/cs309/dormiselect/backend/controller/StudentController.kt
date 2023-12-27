@@ -3,6 +3,7 @@ package cs309.dormiselect.backend.controller
 import cs309.dormiselect.backend.config.CurrentAccount
 import cs309.dormiselect.backend.data.RestResponse
 import cs309.dormiselect.backend.data.asRestResponse
+import cs309.dormiselect.backend.data.student.StudentInfoDto
 import cs309.dormiselect.backend.domain.Announcement
 import cs309.dormiselect.backend.domain.Comment
 import cs309.dormiselect.backend.domain.Dormitory
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.*
 import kotlin.jvm.optionals.getOrElse
 
 @RestController
-@RequestMapping("/resources/student")
+@RequestMapping("/api/student")
 class StudentController(
     private val teamRepo: TeamRepo,
     private val dormitoryRepo: DormitoryRepo,
@@ -22,7 +23,7 @@ class StudentController(
     private val announcementRepo: AnnouncementRepo,
 ) {
 
-    @GetMapping("/dorm")
+    @GetMapping("/dormitory/list")
     fun listAllDorm(): RestResponse<List<Dormitory>?> {
         return dormitoryRepo.findAll().toList().asRestResponse()
     }
@@ -45,14 +46,41 @@ class StudentController(
         return announcementRepo.findAll().toList().asRestResponse()
     }
 
-    @GetMapping("/select")
-    fun selectDorm(
+    @GetMapping("/information/post")
+    fun viewStudentInfo(@CurrentAccount account: Account):RestResponse<Any?>{
+        account.id?:return RestResponse.fail(404,"You haven't login yet")
+        val student = studentRepo.findById(account.id!!)
+            .getOrElse { return RestResponse.fail(404, "This id is not in the database")}
+        return student.asRestResponse("The student information is found!")
+    }
+
+    @PostMapping("/information/post")
+    fun editStudentInfo(
         @CurrentAccount account: Account,
-        @PathVariable teamId: String,
-    ): RestResponse<Any?> {
-        val team =
-            teamRepo.findTeamStudentLeads(account as Student) ?: return RestResponse.fail(403, "You are not a leader.")
-        TODO()
+        @RequestBody studentInfoDto: StudentInfoDto,
+    ):RestResponse<Any?>{
+        account.id?:return RestResponse.fail(0,"You have not login yet")
+        if(account.id!=studentInfoDto.id){
+            return RestResponse.fail(401,"Your login account is different from the account you want to edit")
+        }
+        val student = studentRepo.findById(account.id!!)
+            .getOrElse {return RestResponse.fail(404,"The id is not in the database") }
+        student.apply{
+            bedTime = studentInfoDto.bedTime
+            age = studentInfoDto.age
+            qq = studentInfoDto.qq
+            email = studentInfoDto.email
+            department = studentInfoDto.department
+            major = studentInfoDto.major
+            wechat = studentInfoDto.wechat
+            wakeUpTime = studentInfoDto.wakeUpTime
+            telephone = studentInfoDto.telephone
+            hobbies.clear()
+            hobbies += studentInfoDto.hobbies
+        }
+        studentRepo.save(student)
+        return RestResponse.success(null,"Successfully edit!")
+
     }
 }
 

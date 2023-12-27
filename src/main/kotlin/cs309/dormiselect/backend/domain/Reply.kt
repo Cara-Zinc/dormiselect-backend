@@ -7,7 +7,8 @@ import java.sql.Timestamp
 @Entity
 class Reply(
     @ManyToOne(optional = false) val comment: Comment,
-    @ManyToOne(optional = false) val author: Account,
+    @ManyToOne(optional = false) val sender: Account,
+    @ManyToOne(optional = false) val receiver: Account,
     var content: String
 ) {
     @Id
@@ -16,6 +17,7 @@ class Reply(
     var likeNum: Int = 0
     val postTime: Timestamp = Timestamp(System.currentTimeMillis())
 
+    
     fun like() {
         likeNum++
     }

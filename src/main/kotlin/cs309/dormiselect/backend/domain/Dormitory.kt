@@ -5,6 +5,7 @@ import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.Id
 import jakarta.persistence.OneToMany
+import java.sql.Timestamp
 
 @Entity
 class Dormitory(
@@ -21,4 +22,5 @@ class Dormitory(
 
     @OneToMany(orphanRemoval = true)
     val comments: MutableList<Comment> = mutableListOf()
+    val datetime: Timestamp? = null
 }

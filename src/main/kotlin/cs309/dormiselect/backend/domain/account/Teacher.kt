@@ -6,6 +6,7 @@ import jakarta.persistence.Entity
 class Teacher(
     name: String,
     password: String,
+    val teacherId:Int
 ) : Account(name, password) {
     var buildingInCharge: String? = null
 }

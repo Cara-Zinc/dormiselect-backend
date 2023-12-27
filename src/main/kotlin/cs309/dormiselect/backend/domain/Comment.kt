@@ -1,6 +1,7 @@
 package cs309.dormiselect.backend.domain
 
 import cs309.dormiselect.backend.domain.account.Account
+import cs309.dormiselect.backend.domain.account.Student
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.Id
@@ -19,8 +20,6 @@ class Comment(
     val id: Int? = null
     val likeNum: Int = 0
 
-    // avatar is used to store an image
-    val avatar: String? = null
 
     @OneToMany
     val replies: MutableList<Reply> = mutableListOf()

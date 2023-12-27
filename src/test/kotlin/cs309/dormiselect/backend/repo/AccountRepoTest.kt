@@ -41,5 +41,6 @@ class AccountRepoTest(
         savedStudent.hobbies += "music"
 
         assertEquals(savedStudent, accountRepo.findByName("student"))
+        assertEquals(savedStudent.hobbies, (accountRepo.findByName("student") as? Student)?.hobbies)
     }
 }

@@ -23,9 +23,9 @@ fun AccountRepo.newStudent(
 fun AccountRepo.newTeacher(
     name: String,
     password: String,
-
+    teacherId: Int,
 ): Teacher {
-    return Teacher(name, password).also { save(it) }
+    return Teacher(name, password, teacherId).also { save(it) }
 }
 
 fun AccountRepo.newAdministrator(name: String, password: String): Administrator {
