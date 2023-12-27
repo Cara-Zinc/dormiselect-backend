@@ -1,6 +1,7 @@
 package cs309.dormiselect.backend.controller
 
 import cs309.dormiselect.backend.config.CurrentAccount
+import cs309.dormiselect.backend.data.PasswordChangeDto
 import cs309.dormiselect.backend.data.RegisterRequestDto
 import cs309.dormiselect.backend.data.RestResponse
 import cs309.dormiselect.backend.data.asRestResponse
@@ -56,6 +57,13 @@ class AccountController(
     @GetMapping("/error")
     fun error(): Nothing {
         throw ResponseStatusException(HttpStatus.I_AM_A_TEAPOT, "I'm a teapot.")
+    }
+
+    @PostMapping("/change_password")
+    fun changePassword(@CurrentAccount account: Account, @RequestBody body: PasswordChangeDto): RestResponse<Nothing?> {
+        require(account.checkPassword(body.old)) { "Old password is incorrect." }
+        account.password = body.new
+        return RestResponse.success(null, "Password changed successfully.")
     }
 
     @PostMapping("/register")
