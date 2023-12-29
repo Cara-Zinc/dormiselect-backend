@@ -1,6 +1,8 @@
 package cs309.dormiselect.backend.controller
 
-import cs309.dormiselect.backend.data.*
+import cs309.dormiselect.backend.data.PageInfo
+import cs309.dormiselect.backend.data.RestResponse
+import cs309.dormiselect.backend.data.asRestResponse
 import cs309.dormiselect.backend.data.dormitory.DormInfoDto
 import cs309.dormiselect.backend.data.dormitory.DormListDto
 import cs309.dormiselect.backend.data.dormitory.DormPageRequestDto
@@ -8,9 +10,10 @@ import cs309.dormiselect.backend.data.dormitory.DormitoryDto
 import cs309.dormiselect.backend.data.student.StudentInfoDto
 import cs309.dormiselect.backend.data.student.StudentListDto
 import cs309.dormiselect.backend.data.student.StudentUploadDto
-import cs309.dormiselect.backend.domain.*
+import cs309.dormiselect.backend.data.teacher.TeamMemberRemoveDto
+import cs309.dormiselect.backend.domain.Dormitory
+import cs309.dormiselect.backend.domain.Team
 import cs309.dormiselect.backend.domain.account.Student
-import cs309.dormiselect.backend.domain.account.Teacher
 import cs309.dormiselect.backend.repo.*
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
@@ -27,16 +30,39 @@ class TeacherController(
     private val accountRepo: AccountRepo,
     private val teamRepo: TeamRepo,
     private val teacherRepo: TeacherRepo,
-) {//TODO
-
-    @GetMapping("/team/select/list")
+) {
+    @GetMapping("/select/list")
     fun viewTeamSelection(
         @RequestBody page: Int,
         @RequestBody pageSize: Int,
-    ): RestResponse<List<Team>?> {
+    ): RestResponse<Any?> {
         val pageable: Pageable = PageRequest.of(page - 1, pageSize)
         val resultPage: Page<Team> = teamRepo.findAll(pageable)
-        return RestResponse.success(null, "Return team list page $page")
+
+        return object {
+            val total = resultPage.totalPages
+            val page = page
+            val pageSize = pageSize
+            val rows = resultPage.asSequence()
+                .filterNotNull()
+                .map {
+                    object {
+                        val name = it.name
+                        val leaderId = it.leader.studentId
+                        val leaderName = it.leader.name
+                        val introduction = it.introduction
+                        val membersId = it.members.map(Student::studentId)
+                        val membersName = it.members.map(Student::name)
+                        val dormitory = it.dormitory?.let { dorm ->
+                            object {
+                                val zoneId = dorm.zoneId
+                                val buildingId = dorm.buildingId
+                                val roomId = dorm.roomId
+                            }
+                        }
+                    }
+                }
+        }.asRestResponse()
     }
 
     @GetMapping("/student/list")
@@ -231,11 +257,11 @@ class TeacherController(
 
     @PostMapping("/team/remove_member")
     fun removeTeamMember(
-        @RequestBody teamId: Int,
-        @RequestBody studentId: Int,
+        @RequestBody body: TeamMemberRemoveDto
     ): RestResponse<Any?> {
+        val (teamId, studentId) = body
         val team = teamRepo.findById(teamId).getOrElse { return RestResponse.fail(404, "Team $teamId does not exist") }
-        val teamFind = teamRepo.findTeamStudentBelongTo(studentId)
+        val teamFind = teamRepo.findByMembersStudentIdContaining(studentId).firstOrNull()
             ?: return RestResponse.fail(404, "Student $studentId does not join any team!")
         if (teamFind.id == team.id) {
             team.members.removeIf { student -> student.id == studentId }

@@ -9,6 +9,8 @@ import org.springframework.data.repository.CrudRepository
 interface TeamRepo : CrudRepository<Team, Int>{
     fun findByMembersIdContaining(memberId: Int): List<Team>
 
+    fun findByMembersStudentIdContaining(memberStudentId: Int): List<Team>
+
     fun findByDormitoryId(dormitoryId: Int): List<Team>
 
     fun findByFavoritesIdContaining(dormitoryId: Int): List<Team>
