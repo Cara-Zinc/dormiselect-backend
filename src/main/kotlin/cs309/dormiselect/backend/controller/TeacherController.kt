@@ -1,6 +1,8 @@
 package cs309.dormiselect.backend.controller
 
+import cs309.dormiselect.backend.config.CurrentAccount
 import cs309.dormiselect.backend.data.PageInfo
+import cs309.dormiselect.backend.data.PageInformation
 import cs309.dormiselect.backend.data.RestResponse
 import cs309.dormiselect.backend.data.asRestResponse
 import cs309.dormiselect.backend.data.dormitory.DormInfoDto
@@ -10,9 +12,11 @@ import cs309.dormiselect.backend.data.dormitory.DormitoryDto
 import cs309.dormiselect.backend.data.student.StudentInfoDto
 import cs309.dormiselect.backend.data.student.StudentListDto
 import cs309.dormiselect.backend.data.student.StudentUploadDto
+import cs309.dormiselect.backend.data.teacher.AnnouncementPublishDto
 import cs309.dormiselect.backend.data.teacher.TeamMemberRemoveDto
 import cs309.dormiselect.backend.domain.Dormitory
 import cs309.dormiselect.backend.domain.Team
+import cs309.dormiselect.backend.domain.account.Account
 import cs309.dormiselect.backend.domain.account.Student
 import cs309.dormiselect.backend.repo.*
 import org.springframework.data.domain.Page
@@ -30,12 +34,13 @@ class TeacherController(
     private val accountRepo: AccountRepo,
     private val teamRepo: TeamRepo,
     private val teacherRepo: TeacherRepo,
+    private val announcementRepo: AnnouncementRepo,
 ) {
     @GetMapping("/select/list")
     fun viewTeamSelection(
-        @RequestBody page: Int,
-        @RequestBody pageSize: Int,
+        @RequestBody body: PageInformation,
     ): RestResponse<Any?> {
+        val (page, pageSize) = body
         val pageable: Pageable = PageRequest.of(page - 1, pageSize)
         val resultPage: Page<Team> = teamRepo.findAll(pageable)
 
@@ -272,4 +277,12 @@ class TeacherController(
         }
     }
 
+    @PostMapping("/announcement/publish")
+    fun publishAnnouncement(
+        @CurrentAccount account: Account,
+        @RequestBody body: AnnouncementPublishDto
+    ): RestResponse<Any?> {
+        announcementRepo.newAnnouncement(account, body.receiver, body.priority, body.content)
+        return RestResponse.success(null, "Announcement published")
+    }
 }
