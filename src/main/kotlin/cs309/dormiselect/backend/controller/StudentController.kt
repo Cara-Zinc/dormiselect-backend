@@ -1,15 +1,20 @@
 package cs309.dormiselect.backend.controller
 
 import cs309.dormiselect.backend.config.CurrentAccount
+import cs309.dormiselect.backend.data.PageInfo
 import cs309.dormiselect.backend.data.RestResponse
 import cs309.dormiselect.backend.data.asRestResponse
 import cs309.dormiselect.backend.data.student.StudentInfoDto
+import cs309.dormiselect.backend.data.student.StudentListDto
 import cs309.dormiselect.backend.domain.Announcement
 import cs309.dormiselect.backend.domain.Comment
 import cs309.dormiselect.backend.domain.Dormitory
 import cs309.dormiselect.backend.domain.account.Account
 import cs309.dormiselect.backend.domain.account.Student
 import cs309.dormiselect.backend.repo.*
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
 import org.springframework.web.bind.annotation.*
 import kotlin.jvm.optionals.getOrElse
 
@@ -81,6 +86,31 @@ class StudentController(
         studentRepo.save(student)
         return RestResponse.success(null,"Successfully edit!")
 
+    }
+
+    @GetMapping("/student/list")
+    fun viewStudentList(
+        @RequestBody pageInfo: PageInfo,
+    ): RestResponse<Any?> {
+        val page = pageInfo.page
+        val pageSize = pageInfo.pageSize
+        if (page < 1 || pageSize < 1) {
+            return RestResponse.fail(404, "Error: Page number should be positive and pageSize should be greater than 0")
+        }
+
+        val pageable: Pageable = PageRequest.of(page - 1, pageSize)
+        val resultPage: Page<Student> = studentRepo.findAll(pageable)
+        if (page > resultPage.totalPages) {
+            return RestResponse.fail(404, "Error: Requested page number is too large")
+        }
+        val studentListDto = StudentListDto(
+            total = resultPage.totalPages,
+            page = page,
+            pageSize = pageSize,
+            rows = resultPage.content,
+
+            )
+        return RestResponse.success(studentListDto, "Return student list page $page")
     }
 }
 
