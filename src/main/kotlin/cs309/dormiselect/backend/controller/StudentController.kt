@@ -53,9 +53,15 @@ class StudentController(
     }
 
     @GetMapping("/announcement/list")
-    fun viewAnnouncement(@RequestBody body: PageInformation): RestResponse<List<Announcement>?> {
+    fun viewAnnouncement(@RequestBody body: PageInformation): RestResponse<Any?> {
         val page = PageRequest.of(body.page, body.pageSize)
-        return announcementRepo.findAll(page).toList().asRestResponse()
+        val result = announcementRepo.findAll(page)
+        return object {
+            val total = result.totalPages
+            val page = body.page
+            val pageSize = body.pageSize
+            val rows = result.content
+        }.asRestResponse()
     }
 
     @GetMapping("/information/post")
