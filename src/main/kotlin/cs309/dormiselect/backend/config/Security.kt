@@ -114,7 +114,7 @@ private class Security(@Autowired val accountRepo: AccountRepo) {
             cors {
                 configurationSource = UrlBasedCorsConfigurationSource().apply {
                     registerCorsConfiguration("/**", CorsConfiguration().apply {
-                        allowedOrigins = listOf("http://10.26.140.45:7777","http://10.25.6.231:7777")
+                        allowedOrigins = listOf("http://10.26.140.45:7777", "http://10.25.6.231:7777")
                         allowedMethods = listOf("GET", "POST")
                         allowedHeaders = listOf("*")
                         allowCredentials = true

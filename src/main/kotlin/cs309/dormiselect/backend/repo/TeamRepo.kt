@@ -6,10 +6,10 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.CrudRepository
 
-interface TeamRepo : CrudRepository<Team, Int>{
+interface TeamRepo : CrudRepository<Team, Int> {
     fun findByMembersIdContaining(memberId: Int): List<Team>
 
-    fun findByMembersStudentIdContaining(memberStudentId: Int): List<Team>
+    fun findByMembersStudentIdContaining(memberStudentId: Long): List<Team>
 
     fun findByDormitoryId(dormitoryId: Int): List<Team>
 

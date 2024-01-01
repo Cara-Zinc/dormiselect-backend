@@ -306,7 +306,7 @@ class TeacherController(
         val teamFind = teamRepo.findByMembersStudentIdContaining(studentId).firstOrNull()
             ?: return RestResponse.fail(404, "Student $studentId does not join any team!")
         if (teamFind.id == team.id) {
-            team.members.removeIf { student -> student.id == studentId }
+            team.members.removeIf { student -> student.studentId == studentId }
             teamRepo.save(team)
             return RestResponse.success(null, "Delete successfully")
         } else {

@@ -5,8 +5,26 @@ spring:
   jpa:
     hibernate:
       ddl-auto: none
+
+  cache:
+    jcache:
+      provider: com.hazelcast.cache.impl.HazelcastServerCachingProvider
+      config: classpath:cache.xml
+
 server:
   servlet:
     session:
       cookie:
         http-only: false
+
+bucket4j:
+  enabled: true
+  filters:
+    - cache-name: buckets
+      http-response-body: { "code": 429,"message": "Too many requests!","data": null }
+      url: .*
+      rate-limits:
+        - bandwidths:
+            - capacity: 5
+              time: 1
+              unit: seconds
