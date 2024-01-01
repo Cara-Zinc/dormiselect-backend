@@ -28,6 +28,9 @@ fun TeamRepo.newTeam(leader: Student, name: String = "${leader.name}'s Team") = 
 
 fun TeamRepo.findTeamStudentBelongTo(studentId: Int) = findByMembersIdContaining(studentId).firstOrNull()
 
+fun TeamRepo.findTeamDormitoryIsFavourite(dormitoryId: Int) = findByFavoritesIdContaining(dormitoryId)
+
+fun TeamRepo.findDormitorySelectedBy(dormitoryId: Int) = findByDormitoryId(dormitoryId).firstOrNull()
 fun TeamRepo.findTeamStudentBelongTo(student: Student) = findTeamStudentBelongTo(student.id!!)
 
 fun TeamRepo.findTeamStudentLeads(studentId: Int) = findByLeaderId(studentId).firstOrNull()

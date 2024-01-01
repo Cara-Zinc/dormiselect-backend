@@ -12,3 +12,6 @@ interface CommentRepo: CrudRepository<Comment, Int> {
     fun findByAuthor(account: Account): List<Comment>
     fun findByPostTime(postTimes: Timestamp): List<Comment>
 }
+fun CommentRepo.newComment(dormitory: Dormitory,author: Account, content:String): Comment {
+    return Comment(dormitory, author, content).also { save(it) }
+}

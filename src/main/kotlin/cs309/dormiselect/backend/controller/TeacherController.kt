@@ -171,6 +171,16 @@ class TeacherController(
         return RestResponse.success(null, "Edit dormitory info Successfully")
     }
 
+    @PostMapping("/dormitory/delete")
+    fun deleteDormitory(
+        @RequestBody dormId: Int,
+    ):RestResponse<Any?>{
+        val dormitory = dormitoryRepo.findById(dormId)
+            .getOrElse { return RestResponse.fail(404,"Dormitory not found in the database") }
+        dormitoryRepo.delete(dormitory)
+        return RestResponse.success(null,"Successfully delete dormitory $dormId")
+    }
+
     //
     @PostMapping("/student/edit")
     fun editStudentInfo(
@@ -195,9 +205,19 @@ class TeacherController(
         return RestResponse.success(null, "Edit student info Successfully")
     }
 
+    @PostMapping
+    fun deleteStudent(
+        @RequestParam id: Int,
+    ):RestResponse<Any?>{
+        val student = studentRepo.findById(id)
+            .getOrElse { return RestResponse.fail(404, "fail to find student in the database") }
+        studentRepo.delete(student)
+        return RestResponse.success(null,"Successfully delete a student")
+    }
+
     @GetMapping("/dormitory/list")
     fun viewDormitoryList(
-        @RequestBody dormPageRequestDto: DormPageRequestDto
+        @ModelAttribute dormPageRequestDto: DormPageRequestDto
     ): RestResponse<Any?> {
         if (dormPageRequestDto.page < 1 || dormPageRequestDto.pageSize < 1) {
             return RestResponse.fail(404, "Error: Page number should be positive and pageSize should be greater than 0")

@@ -5,6 +5,10 @@ import cs309.dormiselect.backend.data.PageInfo
 import cs309.dormiselect.backend.data.PageInformation
 import cs309.dormiselect.backend.data.RestResponse
 import cs309.dormiselect.backend.data.asRestResponse
+import cs309.dormiselect.backend.data.dormitory.CommentReplyDto
+import cs309.dormiselect.backend.data.dormitory.DormCommentDto
+import cs309.dormiselect.backend.data.dormitory.DormListDto
+import cs309.dormiselect.backend.data.dormitory.DormPageRequestDto
 import cs309.dormiselect.backend.data.student.StudentInfoDto
 import cs309.dormiselect.backend.data.student.StudentListDto
 import cs309.dormiselect.backend.domain.Announcement
@@ -30,8 +34,30 @@ class StudentController(
 ) {
 
     @GetMapping("/dormitory/list")
-    fun listAllDorm(): RestResponse<List<Dormitory>?> {
-        return dormitoryRepo.findAll().toList().asRestResponse()
+    fun viewDormitoryList(
+        @ModelAttribute dormPageRequestDto: DormPageRequestDto
+    ): RestResponse<Any?> {
+        if (dormPageRequestDto.page < 1 || dormPageRequestDto.pageSize < 1) {
+            return RestResponse.fail(404, "Error: Page number should be positive and pageSize should be greater than 0")
+        }
+
+        val pageable: Pageable = PageRequest.of(dormPageRequestDto.page - 1, dormPageRequestDto.pageSize)
+        val resultPage: Page<Dormitory> = dormitoryRepo.findByZoneIdBuildingIdAndSizeWithZoneIdCheck(
+            dormPageRequestDto.zoneId,
+            dormPageRequestDto.buildingId,
+            dormPageRequestDto.size,
+            pageable,
+        )
+        if (dormPageRequestDto.page > resultPage.totalPages) {
+            return RestResponse.fail(404, "Error: Requested page number is too large")
+        }
+        val dormListDto = DormListDto(
+            total = resultPage.totalPages,
+            page = dormPageRequestDto.page,
+            pageSize = dormPageRequestDto.pageSize,
+            rows = resultPage.content,
+        )
+        return RestResponse.success(dormListDto, "Return dormitory list page ${dormPageRequestDto.page}")
     }
 
     @PostMapping("/dorm/{dormitoryId}")
@@ -53,7 +79,7 @@ class StudentController(
     }
 
     @GetMapping("/announcement/list")
-    fun viewAnnouncement(@RequestBody body: PageInformation): RestResponse<Any?> {
+    fun viewAnnouncement( @ModelAttribute body: PageInformation): RestResponse<Any?> {
         val page = PageRequest.of(body.page, body.pageSize)
         val result = announcementRepo.findAll(page)
         return object {
@@ -75,7 +101,7 @@ class StudentController(
     @PostMapping("/information/post")
     fun editStudentInfo(
         @CurrentAccount account: Account,
-        @RequestBody studentInfoDto: StudentInfoDto,
+        @ModelAttribute studentInfoDto: StudentInfoDto,
     ):RestResponse<Any?>{
         account.id?:return RestResponse.fail(0,"You have not login yet")
         if(account.id!=studentInfoDto.id){
@@ -103,7 +129,7 @@ class StudentController(
 
     @GetMapping("/student/list")
     fun viewStudentList(
-        @RequestBody pageInfo: PageInfo,
+        @ModelAttribute pageInfo: PageInfo,
     ): RestResponse<Any?> {
         val page = pageInfo.page
         val pageSize = pageInfo.pageSize
@@ -125,6 +151,31 @@ class StudentController(
             )
         return RestResponse.success(studentListDto, "Return student list page $page")
     }
+
+    @PostMapping("/dormitory/comment")
+    fun commentOnDorm(
+        @RequestBody dormCommentDto: DormCommentDto,
+        @CurrentAccount account: Account,
+    ):RestResponse<Any?>{
+        val dorm = dormitoryRepo.findById(dormCommentDto.id)
+            .getOrElse { return RestResponse.fail(404,"Invalid dormitory ID") }
+        dorm.comments.add(commentRepo.newComment(dorm,account,dormCommentDto.content))
+        return RestResponse.success(null,"Successfully post a comment!")
+    }
+
+    @PostMapping("/dormitory/reply")
+    fun replyComment(
+        @RequestBody reply: CommentReplyDto,
+        @CurrentAccount account: Account,
+    ): RestResponse<Any?>{
+        val dorm = dormitoryRepo.findById(reply.id)
+            .getOrElse { return RestResponse.fail(404,"Invalid dormitory ID") }
+        TODO("the actual definition of Reply is unsure.")
+
+        return RestResponse.success(null,"Successfully post a reply!")
+    }
+
+
 }
 
 

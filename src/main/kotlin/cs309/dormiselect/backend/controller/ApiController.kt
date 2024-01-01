@@ -35,13 +35,16 @@ class ApiController(
             securityContextHolderStrategy.context = context
             securityContextRepository.saveContext(context, request, response)
 
+            val authorities = it.authorities.toList().mapNotNull { it.authority }
+            val role = authorities.lastOrNull()
+
             object {
-                val token = "SUSTech.Administrator.Auth"
+                val token = "SUSTech.$role.Auth"
                 val userInfo = object {
-                    val userId = 1
-                    val userName = "Administrator"
+                    val userId = 0
+                    val userName = ""
                     val dashboard = 0
-                    val role = listOf("SA", "admin", "Auditor")
+                    val role = listOf("Administrator", "Teacher", "Student")
                 }
             }.asRestResponse()
         }.getOrElse {
