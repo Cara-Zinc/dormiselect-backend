@@ -11,6 +11,7 @@ import cs309.dormiselect.backend.data.student.StudentListDto
 import cs309.dormiselect.backend.data.student.StudentUploadDto
 import cs309.dormiselect.backend.data.teacher.AnnouncementPublishDto
 import cs309.dormiselect.backend.data.teacher.TeamMemberRemoveDto
+import cs309.dormiselect.backend.domain.Announcement
 import cs309.dormiselect.backend.domain.Dormitory
 import cs309.dormiselect.backend.domain.Team
 import cs309.dormiselect.backend.domain.account.Account
@@ -167,6 +168,7 @@ class TeacherController(
             info = dormitoryDto.info
         })
 
+
         return RestResponse.success(null, "Edit dormitory info Successfully")
     }
 
@@ -320,4 +322,15 @@ class TeacherController(
         announcementRepo.newAnnouncement(account, body.receiver, body.priority, body.content)
         return RestResponse.success(null, "Announcement published")
     }
+
+    @GetMapping("/announcement/list")
+    fun viewAnnouncement(
+        @RequestBody pageInfo: PageInfo,
+    ): RestResponse<Any?> {
+        val pageable: Pageable = PageRequest.of(pageInfo.page - 1, pageInfo.pageSize)
+        val resultPage: Page<Announcement> = announcementRepo.findAll(pageable)
+        return RestResponse.success(resultPage.content, "Return announcement list page ${pageInfo.pageSize}")
+    }
+
+
 }
