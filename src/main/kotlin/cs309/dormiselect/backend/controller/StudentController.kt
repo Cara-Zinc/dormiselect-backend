@@ -30,7 +30,8 @@ class StudentController(
     private val dormitoryRepo: DormitoryRepo,
     private val commentRepo: CommentRepo,
     private val studentRepo: StudentRepo,
-    private val announcementRepo: AnnouncementRepo,
+    private val announcementRepo: AnnouncementRepo, private val replyRepo: ReplyRepo,
+    private val accountRepo: AccountRepo,
 ) {
 
     @GetMapping("/dormitory/list")
@@ -51,27 +52,42 @@ class StudentController(
         if (dormPageRequestDto.page > resultPage.totalPages) {
             return RestResponse.fail(404, "Error: Requested page number is too large")
         }
+        val rows = mutableListOf<Any>()
+        for(dorm in resultPage.content){
+            val comments = commentRepo.findByDormitoryId(dorm.id!!)
+            val commentList = mutableListOf<Any>()
+            for(comment in comments){
+                val replies = replyRepo.findByCommentId(comment.id!!)
+                commentList.add(object {
+                    val id = comment.id
+                    val author = comment.author
+                    val content = comment.content
+                    val likeNum = comment.likeNum
+                    val replies = replies
+                })
+
+            }
+            rows.add(object {
+                val id = dorm.id
+                val roomId = dorm.roomId
+                val zoneId = dorm.zoneId
+                val size = dorm.size
+                val buildingId = dorm.buildingId
+                val gender = dorm.gender
+                val info = dorm.info
+                val datetime = dorm.datetime
+                val comments = commentList
+            })
+        }
         val dormListDto = DormListDto(
             total = resultPage.totalPages,
             page = dormPageRequestDto.page,
             pageSize = dormPageRequestDto.pageSize,
-            rows = resultPage.content,
+            rows = rows,
         )
         return RestResponse.success(dormListDto, "Return dormitory list page ${dormPageRequestDto.page}")
     }
 
-    @PostMapping("/dorm/{dormitoryId}")
-    fun commentOnDorm(
-        @PathVariable dormitoryId: Int,
-        @RequestBody comment: Comment,
-    ): RestResponse<Any?> {
-        val dormitory =
-            dormitoryRepo.findById(dormitoryId)
-                .getOrElse { return RestResponse.fail(404, "Dormitory not found") }
-        //TODO commentDto and logic of adding comments
-        commentRepo.save(comment)
-        return RestResponse.success(null, "Post comment successfully")
-    }
 
     @GetMapping("/announcement")
     fun viewAnnouncement(): RestResponse<List<Announcement>?> {
@@ -159,7 +175,8 @@ class StudentController(
     ):RestResponse<Any?>{
         val dorm = dormitoryRepo.findById(dormCommentDto.id)
             .getOrElse { return RestResponse.fail(404,"Invalid dormitory ID") }
-        dorm.comments.add(commentRepo.newComment(dorm,account,dormCommentDto.content))
+
+        commentRepo.newComment(dorm,account,dormCommentDto.content)
         return RestResponse.success(null,"Successfully post a comment!")
     }
 
@@ -168,13 +185,42 @@ class StudentController(
         @RequestBody reply: CommentReplyDto,
         @CurrentAccount account: Account,
     ): RestResponse<Any?>{
-        val dorm = dormitoryRepo.findById(reply.id)
-            .getOrElse { return RestResponse.fail(404,"Invalid dormitory ID") }
-        TODO("the actual definition of Reply is unsure.")
+        val comment = commentRepo.findById(reply.id)
+            .getOrElse { return RestResponse.fail(404,"Invalid comment ID") }
 
+        val receiver = accountRepo.findById(reply.receiver)
+            .getOrElse { return RestResponse.fail(404,"receiver not found in database") }
+        replyRepo.newReply(comment,account,receiver,reply.content)
         return RestResponse.success(null,"Successfully post a reply!")
     }
 
+    @GetMapping("/dormitory/comment/list")
+    fun fetchComment(
+        @RequestParam id: Int
+    ):RestResponse<Any?> {
+        val isDorm = dormitoryRepo.existsById(id)
+        if (isDorm) {
+            val comments = commentRepo.findByDormitoryId(id)
+            return RestResponse.success(comments, "Fetch the comment list of dormitory $id")
+        }
+        else{
+            return RestResponse.fail(404,"Invalid dormitory ID")
+        }
+    }
+    @GetMapping("/dormitory/reply/list")
+    fun fetchReplies(
+        @RequestParam id: Int,
+    ):RestResponse<Any?>{
+        val isComment = commentRepo.existsById(id)
+        if(isComment){
+            val replies = replyRepo.findByCommentId(id)
+            return RestResponse.success(replies,"Fetch the reply list")
+        }
+        else{
+            return RestResponse.fail(404,"Invalid comment Id")
+        }
+
+    }
 
 }
 

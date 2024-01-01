@@ -1,16 +1,13 @@
 package cs309.dormiselect.backend.domain
 
 import cs309.dormiselect.backend.domain.account.Student
-import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.Id
-import jakarta.persistence.ManyToOne
+import jakarta.persistence.*
 import java.sql.Timestamp
 
 @Entity
 class TeamJoinRequest(
-    @ManyToOne(optional = false) val student: Student,
-    @ManyToOne(optional = false) val team: Team,
+    @ManyToOne(optional = false, cascade = [CascadeType.ALL]) val student: Student,
+    @ManyToOne(optional = false, cascade = [CascadeType.ALL]) val team: Team,
     val info: String,
 ) {
     @Id

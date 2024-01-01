@@ -6,5 +6,5 @@ data class DormListDto(
     val total: Int,
     val page: Int,
     val pageSize: Int,
-    val rows: List<Dormitory>,
+    val rows: List<Any>,
 )

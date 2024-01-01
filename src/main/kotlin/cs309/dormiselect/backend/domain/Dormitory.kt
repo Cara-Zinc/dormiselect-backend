@@ -20,7 +20,7 @@ class Dormitory(
     @GeneratedValue
     val id: Int? = null
 
-    @OneToMany(orphanRemoval = true)
-    val comments: MutableList<Comment> = mutableListOf()
+    // @OneToMany(orphanRemoval = true)
+    // val comments: MutableList<Comment> = mutableListOf()
     val datetime: Timestamp? = null
 }

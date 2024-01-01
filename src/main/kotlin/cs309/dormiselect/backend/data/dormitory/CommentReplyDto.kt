@@ -4,6 +4,6 @@ import javax.sound.midi.MidiDeviceReceiver
 
 data class CommentReplyDto(
     val id: Int, //increment id in Comment table
-    val receiver: String,
+    val receiver: Int,
     val content: String,
 )

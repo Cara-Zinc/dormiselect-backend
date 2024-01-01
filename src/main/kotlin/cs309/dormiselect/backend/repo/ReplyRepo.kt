@@ -8,6 +8,7 @@ import javax.sound.midi.Receiver
 
 interface ReplyRepo : CrudRepository<Reply, Int>{
 
+    fun findByCommentId(commentId: Int): List<Reply>
 
 }
 fun ReplyRepo.newReply(comment: Comment, sender: Account, receiver: Account, content: String): Reply {

@@ -5,10 +5,7 @@ import cs309.dormiselect.backend.data.PageInfo
 import cs309.dormiselect.backend.data.PageInformation
 import cs309.dormiselect.backend.data.RestResponse
 import cs309.dormiselect.backend.data.asRestResponse
-import cs309.dormiselect.backend.data.dormitory.DormInfoDto
-import cs309.dormiselect.backend.data.dormitory.DormListDto
-import cs309.dormiselect.backend.data.dormitory.DormPageRequestDto
-import cs309.dormiselect.backend.data.dormitory.DormitoryDto
+import cs309.dormiselect.backend.data.dormitory.*
 import cs309.dormiselect.backend.data.student.StudentInfoDto
 import cs309.dormiselect.backend.data.student.StudentListDto
 import cs309.dormiselect.backend.data.student.StudentUploadDto
@@ -34,6 +31,7 @@ class TeacherController(
     private val accountRepo: AccountRepo,
     private val teamRepo: TeamRepo,
     private val teacherRepo: TeacherRepo,
+    private val commentRepo: CommentRepo,
     private val announcementRepo: AnnouncementRepo,
 ) {
     @GetMapping("/select/list")
@@ -160,25 +158,26 @@ class TeacherController(
             dormitoryDto.buildingId,
         ) ?: return RestResponse.fail(404, "No")
 
-        dormitory.apply {
+        dormitoryRepo.save(dormitory.apply {
             roomId = dormitoryDto.roomId
             zoneId = dormitoryDto.zoneId
+            gender = dormitoryDto.gender
             size = dormitoryDto.size
             buildingId = dormitoryDto.buildingId
             info = dormitoryDto.info
-        }
+        })
 
         return RestResponse.success(null, "Edit dormitory info Successfully")
     }
 
     @PostMapping("/dormitory/delete")
     fun deleteDormitory(
-        @RequestBody dormId: Int,
-    ):RestResponse<Any?>{
-        val dormitory = dormitoryRepo.findById(dormId)
-            .getOrElse { return RestResponse.fail(404,"Dormitory not found in the database") }
+        @RequestBody dormDeleteDto: DormDeleteDto
+    ): RestResponse<Any?> {
+        val dormitory = dormitoryRepo.findById(dormDeleteDto.id)
+            .getOrElse { return RestResponse.fail(404, "Dormitory not found in the database") }
         dormitoryRepo.delete(dormitory)
-        return RestResponse.success(null,"Successfully delete dormitory $dormId")
+        return RestResponse.success(null, "Successfully delete dormitory $dormDeleteDto.id")
     }
 
     //
@@ -189,7 +188,7 @@ class TeacherController(
         val student = studentRepo.findByStudentId(studentInfoDto.studentId)
             ?: return RestResponse.fail(404, "Can not find the student in the database")
 
-        student.apply{
+        student.apply {
             bedTime = studentInfoDto.bedTime
             age = studentInfoDto.age
             qq = studentInfoDto.qq
@@ -208,11 +207,11 @@ class TeacherController(
     @PostMapping
     fun deleteStudent(
         @RequestParam id: Int,
-    ):RestResponse<Any?>{
+    ): RestResponse<Any?> {
         val student = studentRepo.findById(id)
             .getOrElse { return RestResponse.fail(404, "fail to find student in the database") }
         studentRepo.delete(student)
-        return RestResponse.success(null,"Successfully delete a student")
+        return RestResponse.success(null, "Successfully delete a student")
     }
 
     @GetMapping("/dormitory/list")
@@ -233,14 +232,30 @@ class TeacherController(
         if (dormPageRequestDto.page > resultPage.totalPages) {
             return RestResponse.fail(404, "Error: Requested page number is too large")
         }
+        val rows = mutableListOf<Any>()
+        for(dorm in resultPage.content){
+            val comments = commentRepo.findByDormitoryId(dorm.id!!)
+            rows.add(object {
+                val id = dorm.id
+                val roomId = dorm.roomId
+                val zoneId = dorm.zoneId
+                val size = dorm.size
+                val buildingId = dorm.buildingId
+                val gender = dorm.gender
+                val info = dorm.info
+                val datetime = dorm.datetime
+                val comments = comments
+            })
+        }
         val dormListDto = DormListDto(
             total = resultPage.totalPages,
             page = dormPageRequestDto.page,
             pageSize = dormPageRequestDto.pageSize,
-            rows = resultPage.content,
+            rows = rows,
         )
         return RestResponse.success(dormListDto, "Return dormitory list page ${dormPageRequestDto.page}")
     }
+
 
     @PostMapping("/select/time")
     fun editSelectionTime(): RestResponse<Any?> {
