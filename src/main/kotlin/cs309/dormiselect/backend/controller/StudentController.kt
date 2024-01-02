@@ -25,7 +25,8 @@ class StudentController(
     private val dormitoryRepo: DormitoryRepo,
     private val commentRepo: CommentRepo,
     private val studentRepo: StudentRepo,
-    private val announcementRepo: AnnouncementRepo, private val replyRepo: ReplyRepo,
+    private val announcementRepo: AnnouncementRepo,
+    private val replyRepo: ReplyRepo,
     private val accountRepo: AccountRepo,
 ) {
 
@@ -75,7 +76,7 @@ class StudentController(
             })
         }
         val dormListDto = DormListDto(
-            total = resultPage.totalPages,
+            total = dormitoryRepo.count().toInt(),
             page = dormPageRequestDto.page,
             pageSize = dormPageRequestDto.pageSize,
             rows = rows,
@@ -84,22 +85,11 @@ class StudentController(
     }
 
 
-    @GetMapping("/announcement")
-    fun viewAnnouncement(): RestResponse<List<Announcement>?> {
-        return announcementRepo.findAll().toList().asRestResponse()
+    @GetMapping("/announcement/list")
+    fun viewAnnouncement(): RestResponse<Any?> {
+        return object{val rows = announcementRepo.findByReceiver(Announcement.Receiver.STUDENT).toList()}.asRestResponse()
     }
 
-    @GetMapping("/announcement/list")
-    fun viewAnnouncement( @ModelAttribute body: PageInfo): RestResponse<Any?> {
-        val page = PageRequest.of(body.page, body.pageSize)
-        val result = announcementRepo.findAll(page)
-        return object {
-            val total = result.totalPages
-            val page = body.page
-            val pageSize = body.pageSize
-            val rows = result.content
-        }.asRestResponse()
-    }
 
     @GetMapping("/information/post")
     fun viewStudentInfo(@CurrentAccount account: Account):RestResponse<Any?>{
@@ -154,7 +144,7 @@ class StudentController(
             return RestResponse.fail(404, "Error: Requested page number is too large")
         }
         val studentListDto = StudentListDto(
-            total = resultPage.totalPages,
+            total = studentRepo.count().toInt(),
             page = page,
             pageSize = pageSize,
             rows = resultPage.content,

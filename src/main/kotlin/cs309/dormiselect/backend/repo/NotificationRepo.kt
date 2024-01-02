@@ -12,5 +12,3 @@ interface NotificationRepo : CrudRepository<Notification, Long> {
 
     //TODO: check if any operation needs to insert a notification and create subclasses for them
 }
-
-//fun NotificationRepo()
