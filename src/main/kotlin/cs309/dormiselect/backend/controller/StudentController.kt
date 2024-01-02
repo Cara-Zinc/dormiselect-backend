@@ -5,10 +5,7 @@ import cs309.dormiselect.backend.data.PageInfo
 import cs309.dormiselect.backend.data.PageInformation
 import cs309.dormiselect.backend.data.RestResponse
 import cs309.dormiselect.backend.data.asRestResponse
-import cs309.dormiselect.backend.data.dormitory.CommentReplyDto
-import cs309.dormiselect.backend.data.dormitory.DormCommentDto
-import cs309.dormiselect.backend.data.dormitory.DormListDto
-import cs309.dormiselect.backend.data.dormitory.DormPageRequestDto
+import cs309.dormiselect.backend.data.dormitory.*
 import cs309.dormiselect.backend.data.student.StudentInfoDto
 import cs309.dormiselect.backend.data.student.StudentListDto
 import cs309.dormiselect.backend.domain.Announcement
@@ -221,6 +218,37 @@ class StudentController(
         }
 
     }
+
+    @PostMapping("/dormitory/comment/like")
+    fun likeComment(
+        @RequestBody  commentLikeDto: CommentLikeDto
+    ):RestResponse<Any?>{
+        val comment = commentRepo.findById(commentLikeDto.id)
+            .getOrElse { return RestResponse.fail(404,"The comment does not exist") }
+        if(commentLikeDto.hasLiked){
+            comment.dislike()
+        }else{
+            comment.like()
+        }
+        commentRepo.save(comment)
+        return RestResponse.success(object {val likeNum = comment.likeNum},"you just liked comment")
+    }
+
+    @PostMapping("/dormitory/reply/like")
+    fun likeReply(
+        @RequestBody commentLikeDto: CommentLikeDto
+    ):RestResponse<Any?>{
+        val comment = replyRepo.findById(commentLikeDto.id)
+            .getOrElse { return RestResponse.fail(404,"The comment does not exist") }
+        if(commentLikeDto.hasLiked){
+            comment.dislike()
+        }else{
+            comment.like()
+        }
+        replyRepo.save(comment)
+        return RestResponse.success(object {val likeNum = comment.likeNum},"you just liked reply")
+    }
+
 
 }
 

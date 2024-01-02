@@ -20,9 +20,15 @@ class Comment(
     @Id
     @GeneratedValue
     val id: Int? = null
-    val likeNum: Int = 0
+    var likeNum: Int = 0
 
+    fun like() {
+        likeNum++
+    }
 
+    fun dislike(){
+        likeNum--
+    }
 //    @OneToMany
 //    val replies: MutableList<Reply> = mutableListOf()
     val postTime: Timestamp = Timestamp(System.currentTimeMillis())

@@ -21,4 +21,8 @@ class Reply(
     fun like() {
         likeNum++
     }
+
+    fun dislike(){
+        likeNum--
+    }
 }

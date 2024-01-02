@@ -1,10 +1,13 @@
 package cs309.dormiselect.backend.controller;
 
 import cs309.dormiselect.backend.config.CurrentAccount
+import cs309.dormiselect.backend.data.PageInfo
 import cs309.dormiselect.backend.data.RestResponse
+import cs309.dormiselect.backend.data.TeamListDto
 import cs309.dormiselect.backend.data.asRestResponse
 import cs309.dormiselect.backend.data.message.MessageQueryDto
 import cs309.dormiselect.backend.data.message.MessageSendDto
+import cs309.dormiselect.backend.data.team.TeamCreateDto
 import cs309.dormiselect.backend.data.team.TeamJoinDto
 import cs309.dormiselect.backend.domain.Dormitory
 import cs309.dormiselect.backend.domain.Team
@@ -15,7 +18,9 @@ import cs309.dormiselect.backend.domain.account.Administrator
 import cs309.dormiselect.backend.domain.account.Student
 import cs309.dormiselect.backend.domain.account.Teacher
 import cs309.dormiselect.backend.repo.*
+import org.springframework.data.domain.PageRequest
 import org.springframework.web.bind.annotation.*
+import java.awt.print.Pageable
 import java.sql.Timestamp
 
 @RestController
@@ -27,8 +32,17 @@ class TeamController(
     val teamJoinRequestRepo: TeamJoinRequestRepo,
 ) {
     @GetMapping("/list")
-    fun listAllTeam(): RestResponse<List<Team>?> {
-        return teamRepo.findAll().toList().asRestResponse()
+    fun listAllTeam(
+        @ModelAttribute pageInfo: PageInfo
+    ): RestResponse<Any?> {
+        val pageable: org.springframework.data.domain.Pageable = PageRequest.of(pageInfo.page - 1, pageInfo.pageSize)
+        val resultPage = teamRepo.findAll(pageable)
+
+        if (pageInfo.page > resultPage.totalPages) {
+            return RestResponse.fail(404, "Error: Requested page number is too large")
+        }
+        val teamList = TeamListDto(resultPage.totalPages,pageInfo.page,pageInfo.pageSize,resultPage.content)
+        return teamList.asRestResponse()
     }
 
     @PostMapping("/message/query")
@@ -159,5 +173,27 @@ class TeamController(
 
         teamJoinRequestRepo.declineRequest(requestId)
         return RestResponse.success(null, "request declined")
+    }
+
+    @PostMapping("/create")
+    fun createTeam(
+        @CurrentAccount account: Account,
+        @RequestBody teamCreateDto: TeamCreateDto,
+    ): RestResponse<Any?>{
+        if(account is Student){
+            val hasTeam = teamRepo.findByLeaderId(account.id!!)
+            if(hasTeam==null){
+            TODO("No create twice")
+            }
+            val team = teamRepo.newTeam(account, teamCreateDto.name)
+            team.apply {
+                this.maxSize = teamCreateDto.maxSize
+                this.introduction = teamCreateDto.introduction
+                this.recruiting = teamCreateDto.recruiting
+            }
+            teamRepo.save(team)
+        }
+
+        return RestResponse.success(null,"Successfully create a team")
     }
 }
