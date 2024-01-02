@@ -274,11 +274,6 @@ class TeacherController(
     ): RestResponse<Any?> {
         val student = studentRepo.findById(id)
             .getOrElse { return RestResponse.fail(404, "Id not exist in the database") }
-        val teamList = teamRepo.findByMembersIdContaining(id)
-        var teamName: String? = null
-        if (teamList.isNotEmpty()) {
-            teamName = teamList[0].name
-        }
         val studentInfoDto = StudentInfoDto(
             student.id!!,
             student.studentId,
@@ -294,7 +289,6 @@ class TeacherController(
             student.qq,
             student.wechat,
             student.age,
-            teamName,
             student.hobbies,
         )
         return RestResponse.success(studentInfoDto, "check for student $id 's information")

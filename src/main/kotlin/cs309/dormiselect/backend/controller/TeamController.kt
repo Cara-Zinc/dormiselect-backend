@@ -7,6 +7,7 @@ import cs309.dormiselect.backend.data.message.MessageSendDto
 import cs309.dormiselect.backend.data.team.TeamCreateDto
 import cs309.dormiselect.backend.data.team.TeamJoinDto
 import cs309.dormiselect.backend.domain.Dormitory
+import cs309.dormiselect.backend.domain.DormitoryExchangeRequest
 import cs309.dormiselect.backend.domain.TeamJoinRequest
 import cs309.dormiselect.backend.domain.TeamMessage
 import cs309.dormiselect.backend.domain.account.Account
@@ -29,7 +30,8 @@ class TeamController(
     val teamMessageRepo: TeamMessageRepo,
     val teamJoinRequestRepo: TeamJoinRequestRepo,
     val dormitoryRepo: DormitoryRepo,
-    val notificationRepo: NotificationRepo
+    val notificationRepo: NotificationRepo,
+    val dormitoryExchangeRequestRepo: DormitoryExchangeRequestRepo,
 ) {
     @GetMapping("/list")
     fun listAllTeam(
@@ -321,5 +323,40 @@ class TeamController(
         teamRepo.save(team)
 
         return RestResponse.success(null, "Successfully selected.")
+    }
+
+    @PostMapping("exchange")
+    fun applyExchange(@CurrentAccount account: Account, @RequestBody body: IntegerWrapper): RestResponse<Nothing?> {
+        require(account is Student) {
+            "Only student can apply exchange."
+        }
+        val team = teamRepo.findTeamStudentLeads(account)
+            ?: throw IllegalArgumentException("You are not leading any team.")
+        require(team.full) {
+            "Your team is not full."
+        }
+        require(team.dormitory != null) {
+            "You have not selected a dormitory."
+        }
+        val anotherTeam = teamRepo.findById(body.id).orElseThrow { IllegalArgumentException("Team not found.") }
+        require(team.gender == anotherTeam.gender) {
+            "You can't exchange with teams with different gender."
+        }
+        require(team.maxSize == anotherTeam.maxSize) {
+            "You can't exchange with teams with different size."
+        }
+        require(anotherTeam.full) {
+            "The team you want to exchange with is not full."
+        }
+        require(anotherTeam.dormitory != null) {
+            "The team you want to exchange with have not selected a dormitory."
+        }
+
+        val request = DormitoryExchangeRequest(team, anotherTeam)
+        request.approve1(true)
+        request.approve2(true)
+        dormitoryExchangeRequestRepo.save(request)
+
+        return RestResponse.success(null, "Successfully applied.")
     }
 }
