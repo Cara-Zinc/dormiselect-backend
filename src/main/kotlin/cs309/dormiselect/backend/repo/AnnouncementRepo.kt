@@ -8,6 +8,7 @@ import org.springframework.data.repository.CrudRepository
 
 interface AnnouncementRepo : CrudRepository<Announcement, Int> {
     fun findAll(pageable: Pageable): Page<Announcement>
+    fun findByReceiver(receiver: Announcement.Receiver): List<Announcement>
 }
 
 fun AnnouncementRepo.newAnnouncement(

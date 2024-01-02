@@ -31,7 +31,7 @@ class AdminController(
     ): RestResponse<Any?> {
         val pageable: Pageable = PageRequest.of(pageInfo.page - 1, pageInfo.pageSize)
         val resultPage: Page<Teacher> = teacherRepo.findAll(pageable)
-        val page = PageResult<Teacher>(resultPage.totalPages,pageInfo.page,pageInfo.pageSize,resultPage.content)
+        val page = PageResult<Teacher>(teacherRepo.count().toInt(),pageInfo.page,pageInfo.pageSize,resultPage.content)
         return RestResponse.success(page, "Return teacher list page ${pageInfo.pageSize}")
     }
 

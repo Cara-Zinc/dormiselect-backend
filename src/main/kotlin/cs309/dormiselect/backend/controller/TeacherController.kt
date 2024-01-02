@@ -8,6 +8,7 @@ import cs309.dormiselect.backend.data.student.StudentListDto
 import cs309.dormiselect.backend.data.student.StudentUploadDto
 import cs309.dormiselect.backend.data.teacher.AnnouncementPublishDto
 import cs309.dormiselect.backend.data.teacher.TeamMemberRemoveDto
+import cs309.dormiselect.backend.domain.Announcement
 import cs309.dormiselect.backend.domain.Dormitory
 import cs309.dormiselect.backend.domain.Team
 import cs309.dormiselect.backend.domain.account.Account
@@ -74,7 +75,7 @@ class TeacherController(
             return RestResponse.fail(404, "Error: Requested page number is too large")
         }
         val studentListDto = StudentListDto(
-            total = resultPage.totalPages,
+            total = studentRepo.count().toInt(),
             page = page,
             pageSize = pageSize,
             rows = resultPage.content,
@@ -244,7 +245,7 @@ class TeacherController(
             })
         }
         val dormListDto = DormListDto(
-            total = resultPage.totalPages,
+            total = dormitoryRepo.count().toInt(),
             page = dormPageRequestDto.page,
             pageSize = dormPageRequestDto.pageSize,
             rows = rows,
@@ -324,10 +325,12 @@ class TeacherController(
         return RestResponse.success(null, "Announcement published")
     }
 
-    @GetMapping("/announcement")
+    @GetMapping("/announcement/list")
     fun viewAnnouncement(
     ): RestResponse<Any?> {
-        return announcementRepo.findAll().asRestResponse()
+        val list1 = announcementRepo.findByReceiver(Announcement.Receiver.TEACHER)
+        val list2 = announcementRepo.findByReceiver(Announcement.Receiver.TEACHER_AND_STUDENT)
+        return (list2+list1).toList().asRestResponse()
     }
 
 }

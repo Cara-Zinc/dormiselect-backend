@@ -39,9 +39,9 @@ class TeamController(
         val resultPage = teamRepo.findAll(pageable)
 
         if (pageInfo.page > resultPage.totalPages) {
-            return TeamListDto(resultPage.totalPages, pageInfo.page, pageInfo.pageSize, listOf()).asRestResponse()
+            return TeamListDto(teamRepo.count().toInt(), pageInfo.page, pageInfo.pageSize, listOf()).asRestResponse()
         }
-        val teamList = TeamListDto(resultPage.totalPages, pageInfo.page, pageInfo.pageSize, resultPage.content)
+        val teamList = TeamListDto(teamRepo.count().toInt(), pageInfo.page, pageInfo.pageSize, resultPage.content)
         return teamList.asRestResponse()
     }
 
