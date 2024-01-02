@@ -13,6 +13,8 @@ import cs309.dormiselect.backend.domain.account.Account
 import cs309.dormiselect.backend.domain.account.Administrator
 import cs309.dormiselect.backend.domain.account.Student
 import cs309.dormiselect.backend.domain.account.Teacher
+import cs309.dormiselect.backend.domain.notification.generateDealtNotification
+import cs309.dormiselect.backend.domain.notification.generateNewApplyNotification
 import cs309.dormiselect.backend.repo.*
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
@@ -27,6 +29,7 @@ class TeamController(
     val teamMessageRepo: TeamMessageRepo,
     val teamJoinRequestRepo: TeamJoinRequestRepo,
     val dormitoryRepo: DormitoryRepo,
+    val notificationRepo: NotificationRepo
 ) {
     @GetMapping("/list")
     fun listAllTeam(
@@ -103,7 +106,8 @@ class TeamController(
         require(account.gender == team.gender) {
             "You can't apply for a team which is different form your gender."
         }
-        teamJoinRequestRepo.newRequest(teamRepo, team, account, teamJoinDto.info)
+        val request = teamJoinRequestRepo.newRequest(teamRepo, team, account, teamJoinDto.info)
+        notificationRepo.save(request.generateNewApplyNotification())
 
         return RestResponse.success(null, "request sent")
     }
@@ -176,6 +180,7 @@ class TeamController(
         }
 
         teamJoinRequestRepo.acceptRequest(teamRepo, requestId)
+        notificationRepo.save(request.generateDealtNotification())
         return RestResponse.success(null, "request accepted")
     }
 
@@ -192,6 +197,7 @@ class TeamController(
         }
 
         teamJoinRequestRepo.declineRequest(requestId)
+        notificationRepo.save(request.generateDealtNotification())
         return RestResponse.success(null, "request declined")
     }
 
@@ -212,6 +218,7 @@ class TeamController(
             introduction = teamCreateDto.introduction
             recruiting = teamCreateDto.recruiting
         }
+        teamRepo.save(team)
 
         return RestResponse.success(null, "Successfully create a team")
     }
@@ -238,6 +245,7 @@ class TeamController(
             maxSize = body.maxSize
             introduction = body.introduction
             recruiting = body.recruiting
+            name = body.name
         }
 
         teamRepo.save(team)
@@ -303,6 +311,9 @@ class TeamController(
         }
         require(dormitory.gender == team.gender) {
             "You can't select a dormitory which is different from your gender!"
+        }
+        require(dormitory.size == team.size) {
+            "You can't select a dormitory which is different from your team size!"
         }
 
         team.dormitory = dormitory
