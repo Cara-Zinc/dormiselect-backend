@@ -13,6 +13,7 @@ import cs309.dormiselect.backend.domain.Dormitory
 import cs309.dormiselect.backend.domain.Team
 import cs309.dormiselect.backend.domain.account.Account
 import cs309.dormiselect.backend.domain.account.Student
+import cs309.dormiselect.backend.domain.notification.NewAnnouncementNotification
 import cs309.dormiselect.backend.repo.*
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
@@ -30,7 +31,7 @@ class TeacherController(
     private val teamRepo: TeamRepo,
     private val teacherRepo: TeacherRepo,
     private val commentRepo: CommentRepo,
-    private val announcementRepo: AnnouncementRepo,
+    private val announcementRepo: AnnouncementRepo, private val notificationRepo: NotificationRepo,
 ) {
     @GetMapping("/select/list")
     fun viewTeamSelection(
@@ -322,6 +323,31 @@ class TeacherController(
         @RequestBody body: AnnouncementPublishDto
     ): RestResponse<Any?> {
         announcementRepo.newAnnouncement(account, body.receiver, body.priority, body.announcement)
+        when(body.receiver){
+            Announcement.Receiver.TEACHER -> {
+                val teacherList = teacherRepo.findAll()
+                for(teacher in teacherList){
+                    notificationRepo.save(NewAnnouncementNotification(teacher))
+                }
+
+            }
+            Announcement.Receiver.STUDENT -> {
+                val studentList = studentRepo.findAll()
+                for(student in studentList){
+                    notificationRepo.save(NewAnnouncementNotification(student))
+                }
+            }
+            Announcement.Receiver.TEACHER_AND_STUDENT -> {
+                val studentList = studentRepo.findAll()
+                for(student in studentList){
+                    notificationRepo.save(NewAnnouncementNotification(student))
+                }
+                val teacherList = teacherRepo.findAll()
+                for(teacher in teacherList){
+                    notificationRepo.save(NewAnnouncementNotification(teacher))
+                }
+            }
+        }
         return RestResponse.success(null, "Announcement published")
     }
 
@@ -330,7 +356,8 @@ class TeacherController(
     ): RestResponse<Any?> {
         val list1 = announcementRepo.findByReceiver(Announcement.Receiver.TEACHER)
         val list2 = announcementRepo.findByReceiver(Announcement.Receiver.TEACHER_AND_STUDENT)
-        return (list2+list1).toList().asRestResponse()
+        return object {val rows = (list2+list1).toList()}.asRestResponse()
     }
+
 
 }

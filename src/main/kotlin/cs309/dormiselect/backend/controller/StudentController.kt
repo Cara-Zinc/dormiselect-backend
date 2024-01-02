@@ -86,12 +86,15 @@ class StudentController(
 
 
     @GetMapping("/announcement/list")
-    fun viewAnnouncement(): RestResponse<Any?> {
-        return object{val rows = announcementRepo.findByReceiver(Announcement.Receiver.STUDENT).toList()}.asRestResponse()
+    fun viewAnnouncement(
+    ): RestResponse<Any?> {
+        val list1 = announcementRepo.findByReceiver(Announcement.Receiver.STUDENT)
+        val list2 = announcementRepo.findByReceiver(Announcement.Receiver.TEACHER_AND_STUDENT)
+        return object {val rows = (list2+list1).toList()}.asRestResponse()
     }
 
 
-    @GetMapping("/information/post")
+    @GetMapping("/information")
     fun viewStudentInfo(@CurrentAccount account: Account):RestResponse<Any?>{
         account.id?:return RestResponse.fail(404,"You haven't login yet")
         val student = studentRepo.findById(account.id!!)
@@ -99,7 +102,7 @@ class StudentController(
         return student.asRestResponse("The student information is found!")
     }
 
-    @PostMapping("/information/post")
+    @PostMapping("/information")
     fun editStudentInfo(
         @CurrentAccount account: Account,
         @ModelAttribute studentInfoDto: StudentInfoDto,

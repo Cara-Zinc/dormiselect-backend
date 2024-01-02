@@ -197,14 +197,24 @@
                 ]
             },
             {
-                "path": "/announcement/view",
-                "name": "view",
+                "path": "/announcement/view_student",
+                "name": "view_student",
                 "meta": {
                     "title": "公告信息",
                     "icon": "el-icon-Bell",
                     "type": "menu"
                 },
-                "component": "announcement/view"
+                "component": "announcement/view_student"
+            },
+            {
+                "path": "/Notification",
+                "name": "Notification",
+                "meta": {
+                    "title": "通知信息",
+                    "icon": "el-icon-Bell",
+                    "type": "menu"
+                },
+                "component": "Notification"
             },
             {
                 "path": "/other/about",

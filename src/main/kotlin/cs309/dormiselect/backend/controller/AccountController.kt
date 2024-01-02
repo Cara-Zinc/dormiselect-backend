@@ -1,10 +1,7 @@
 package cs309.dormiselect.backend.controller
 
 import cs309.dormiselect.backend.config.CurrentAccount
-import cs309.dormiselect.backend.data.PasswordChangeDto
-import cs309.dormiselect.backend.data.RegisterRequestDto
-import cs309.dormiselect.backend.data.RestResponse
-import cs309.dormiselect.backend.data.asRestResponse
+import cs309.dormiselect.backend.data.*
 import cs309.dormiselect.backend.data.message.MessageQueryDto
 import cs309.dormiselect.backend.data.message.MessageSendDto
 import cs309.dormiselect.backend.domain.PrivateMessage
@@ -13,6 +10,7 @@ import cs309.dormiselect.backend.domain.account.Administrator
 import cs309.dormiselect.backend.domain.notification.Notification
 import cs309.dormiselect.backend.repo.*
 import org.apache.commons.logging.LogFactory
+import org.springframework.data.domain.PageRequest
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
@@ -111,13 +109,15 @@ class AccountController(
     }
 
     @GetMapping("/notification/all")
-    fun getAllNotification(@CurrentAccount account: Account): RestResponse<List<Notification>?> {
-        return notificationRepo.findAllValidByReceiverId(account.id!!).asRestResponse()
+    fun getAllNotification(@CurrentAccount account: Account): RestResponse<PageResult<Notification>?> {
+        val pageable = PageRequest.of(0, Int.MAX_VALUE)
+        return notificationRepo.findAllValidByReceiverId(account.id!!).toPageResult(pageable).asRestResponse()
     }
 
     @GetMapping("/notification/unread")
-    fun getUnreadNotification(@CurrentAccount account: Account): RestResponse<List<Notification>?> {
-        return notificationRepo.findAllValidAndNotReadByReceiverId(account.id!!).asRestResponse()
+    fun getUnreadNotification(@CurrentAccount account: Account): RestResponse<PageResult<Notification>?> {
+        val pageable = PageRequest.of(0, Int.MAX_VALUE)
+        return notificationRepo.findAllValidAndNotReadByReceiverId(account.id!!).toPageResult(pageable).asRestResponse()
     }
 
     @GetMapping("/notification/undone")
