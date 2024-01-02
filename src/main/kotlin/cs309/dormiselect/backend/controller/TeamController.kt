@@ -308,6 +308,13 @@ class TeamController(
             "This dormitory is already been occupied!"
         }
         val dormitory = dormitoryRepo.findById(body.id).orElseThrow { IllegalArgumentException("Dormitory not found.") }
+        require(dormitory.datetime != null) {
+            "Dormitory selection has not started yet!"
+        }
+        require(dormitory.datetime!! < Timestamp(System.currentTimeMillis())) {
+            "Dormitory selection has not started yet!"
+        }
+
         require(team.dormitory?.id != dormitory.id) {
             "You have already selected this dormitory!"
         }
