@@ -45,6 +45,7 @@ fun TeamJoinRequestRepo.acceptRequest(teamRepo: TeamRepo, requestId: Int) {
     }
 
     request.accept()
+    save(request)
 }
 
 fun TeamJoinRequestRepo.declineRequest(requestId: Int) {
@@ -54,6 +55,7 @@ fun TeamJoinRequestRepo.declineRequest(requestId: Int) {
     }
 
     request.decline()
+    save(request)
 }
 
 fun TeamJoinRequestRepo.cancelRequest(requestId: Int) {

@@ -26,6 +26,7 @@ class TeamController(
     val teamRepo: TeamRepo,
     val teamMessageRepo: TeamMessageRepo,
     val teamJoinRequestRepo: TeamJoinRequestRepo,
+    val dormitoryRepo: DormitoryRepo,
 ) {
     @GetMapping("/list")
     fun listAllTeam(
@@ -71,13 +72,17 @@ class TeamController(
         return RestResponse.success(null, "message sent")
     }
 
-    @GetMapping("/favorite")
+    @GetMapping("/favorite-list")
     fun listAllFavorite(
         @CurrentAccount account: Account,
-        @RequestParam teamId: Int,
-    ): RestResponse<List<Dormitory>?> {
+        @RequestParam teamId: Int?,
+        @ModelAttribute pageInfo: PageInfo,
+    ): RestResponse<PageResult<Dormitory>?> {
+        val page = PageRequest.of(pageInfo.page - 1, pageInfo.pageSize)
         val team = when (account) {
-            is Teacher, is Administrator -> teamRepo.findById(teamId)
+            is Teacher, is Administrator -> teamRepo.findById(
+                teamId ?: throw IllegalArgumentException("teamId required")
+            )
                 .orElseThrow { IllegalArgumentException("team not found") }
 
             is Student -> teamRepo.findTeamStudentBelongTo(account)
@@ -85,7 +90,7 @@ class TeamController(
 
             else -> throw IllegalArgumentException("account type not supported")
         }
-        return team.favorites.asRestResponse()
+        return team.favorites.toPageResult(page).asRestResponse()
     }
 
     @PostMapping("/apply")
@@ -104,29 +109,26 @@ class TeamController(
     fun listAllMyJoinRequest(
         @CurrentAccount account: Account,
         @ModelAttribute pageInfo: PageInfo,
-    ): RestResponse<Any?> {
+    ): RestResponse<PageResult<TeamJoinRequest>?> {
         val pageable: Pageable = PageRequest.of(pageInfo.page - 1, pageInfo.pageSize)
         return when (account) {
             is Teacher, is Administrator -> teamJoinRequestRepo.findAllByStudentId(
                 account.id ?: throw IllegalArgumentException("student id is required"), pageable
-            )
+            ).toPageResult()
 
-            is Student -> object {
-                val total = teamJoinRequestRepo.findAllByStudentId(account.id!!, pageable).totalPages
-                val page = pageInfo.page
-                val pageSize = pageInfo.pageSize
-                val rows = teamJoinRequestRepo.findAllByStudentId(account.id!!, pageable).content
-            }
+            is Student -> teamJoinRequestRepo.findAllByStudentId(account.id!!, pageable).toPageResult()
             else -> throw IllegalArgumentException("account type not supported")
         }.asRestResponse()
-
-
     }
 
     @PostMapping("/cancel-apply")
-    fun cancelJoinTeam(@CurrentAccount account: Account, @RequestBody integerWrapper: IntegerWrapper): RestResponse<Any?> {
+    fun cancelJoinTeam(
+        @CurrentAccount account: Account,
+        @RequestBody integerWrapper: IntegerWrapper
+    ): RestResponse<Any?> {
         val request =
-            teamJoinRequestRepo.findById(integerWrapper.id).orElseThrow { IllegalArgumentException("request not found") }
+            teamJoinRequestRepo.findById(integerWrapper.id)
+                .orElseThrow { IllegalArgumentException("request not found") }
         if (request.student.id != account.id) {
             return RestResponse.fail(403, "you are not the student of this request")
         }
@@ -158,11 +160,15 @@ class TeamController(
         }.asRestResponse()
     }
 
-    @PostMapping("/request/{requestId}/accept")
-    fun acceptJoinTeam(@CurrentAccount account: Account, @PathVariable requestId: Int): RestResponse<Any?> {
+    @PostMapping("/accept-apply")
+    fun acceptJoinTeam(
+        @CurrentAccount account: Account,
+        @RequestBody integerWrapper: IntegerWrapper
+    ): RestResponse<Any?> {
+        val requestId = integerWrapper.id
         val request =
             teamJoinRequestRepo.findById(requestId).orElseThrow { IllegalArgumentException("request not found") }
-        if (request.team.leader != account) {
+        if (request.team.leader.id != account.id) {
             return RestResponse.fail(403, "you are not the leader of the team of this request")
         }
 
@@ -170,11 +176,15 @@ class TeamController(
         return RestResponse.success(null, "request accepted")
     }
 
-    @PostMapping("/request/{requestId}/decline")
-    fun declineJoinTeam(@CurrentAccount account: Account, @PathVariable requestId: Int): RestResponse<Any?> {
+    @PostMapping("/decline-apply")
+    fun declineJoinTeam(
+        @CurrentAccount account: Account,
+        @RequestBody integerWrapper: IntegerWrapper
+    ): RestResponse<Any?> {
+        val requestId = integerWrapper.id
         val request =
             teamJoinRequestRepo.findById(requestId).orElseThrow { IllegalArgumentException("request not found") }
-        if (request.team.leader != account) {
+        if (request.team.leader.id != account.id) {
             return RestResponse.fail(403, "you are not the leader of the team of this request")
         }
 
@@ -187,16 +197,17 @@ class TeamController(
         @CurrentAccount account: Account,
         @RequestBody teamCreateDto: TeamCreateDto,
     ): RestResponse<Any?> {
-        if (account is Student) {
-            require(teamRepo.findTeamStudentBelongTo(account) == null) {
-                "You have already joined a team"
-            }
-            val team = teamRepo.newTeam(account, teamCreateDto.name)
-            team.apply {
-                maxSize = teamCreateDto.maxSize
-                introduction = teamCreateDto.introduction
-                recruiting = teamCreateDto.recruiting
-            }
+        require(account is Student) {
+            "Only student can create a team"
+        }
+        require(teamRepo.findTeamStudentBelongTo(account) == null) {
+            "You have already joined a team"
+        }
+        val team = teamRepo.newTeam(account, teamCreateDto.name)
+        team.apply {
+            maxSize = teamCreateDto.maxSize
+            introduction = teamCreateDto.introduction
+            recruiting = teamCreateDto.recruiting
         }
 
         return RestResponse.success(null, "Successfully create a team")
@@ -205,7 +216,80 @@ class TeamController(
     @GetMapping("/info")
     fun fetchTeamInfo(
         @CurrentAccount account: Account
-    ): RestResponse<Any?>{
+    ): RestResponse<Any?> {
         return teamRepo.findTeamStudentBelongTo(account.id!!).asRestResponse()
+    }
+
+    @PostMapping("/edit")
+    fun editTeamInfo(
+        @CurrentAccount account: Account,
+        @RequestBody body: TeamCreateDto,
+    ): RestResponse<Nothing?> {
+        require(account is Student) {
+            "Only student can edit a team"
+        }
+
+        val team = teamRepo.findTeamStudentLeads(account)
+            ?: throw IllegalArgumentException("You are not the leader of any team")
+        team.apply {
+            maxSize = body.maxSize
+            introduction = body.introduction
+            recruiting = body.recruiting
+        }
+
+        teamRepo.save(team)
+
+        return RestResponse.success(null, "Successfully edited a team")
+    }
+
+    @PostMapping("collect-dormitory")
+    fun addFavorite(@CurrentAccount account: Account, @RequestBody body: IntegerWrapper): RestResponse<Nothing?> {
+        require(account is Student) {
+            "Only student can add favorite dormitory."
+        }
+
+        val team =
+            teamRepo.findTeamStudentLeads(account) ?: throw IllegalArgumentException("You are not leading any team.")
+        val dormitory = dormitoryRepo.findById(body.id).orElseThrow { IllegalArgumentException("Dormitory not found.") }
+        require(team.favorites.none { it.id == dormitory.id }) {
+            "You have already added this dormitory."
+        }
+
+        team.favorites += dormitory
+        teamRepo.save(team)
+
+        return RestResponse.success(null, "Successfully added.")
+    }
+
+    @PostMapping("cancel-collect-dormitory")
+    fun removeFavorite(@CurrentAccount account: Account, @RequestBody body: IntegerWrapper): RestResponse<Nothing?> {
+        require(account is Student) {
+            "Only student can remove favorite dormitory."
+        }
+
+        val team =
+            teamRepo.findTeamStudentLeads(account) ?: throw IllegalArgumentException("You are not leading any team.")
+        team.favorites.removeIf { it.id == body.id }
+        teamRepo.save(team)
+
+        return RestResponse.success(null, "Successfully removed.")
+    }
+
+    @PostMapping("select-dormitory")
+    fun selectDormitory(@CurrentAccount account: Account, @RequestBody body: IntegerWrapper): RestResponse<Nothing?> {
+        require(account is Student) {
+            "Only student can select dormitory."
+        }
+
+        val team =
+            teamRepo.findTeamStudentLeads(account) ?: throw IllegalArgumentException("You are not leading any team.")
+        val dormitory = dormitoryRepo.findById(body.id).orElseThrow { IllegalArgumentException("Dormitory not found.") }
+        require(team.dormitory?.id != dormitory.id) {
+            "You have already selected this dormitory!"
+        }
+        team.dormitory = dormitory
+        teamRepo.save(team)
+
+        return RestResponse.success(null, "Successfully selected.")
     }
 }
