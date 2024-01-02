@@ -3,7 +3,7 @@ package cs309.dormiselect.backend.data
 import cs309.dormiselect.backend.domain.account.Student
 
 data class RegisterRequestDto(
-    val id: Long,
+    val id: Int,
     val username: String,
     val email: String?,
     val password: String,

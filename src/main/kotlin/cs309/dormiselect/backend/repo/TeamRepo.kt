@@ -9,7 +9,7 @@ import org.springframework.data.repository.CrudRepository
 interface TeamRepo : CrudRepository<Team, Int> {
     fun findByMembersIdContaining(memberId: Int): List<Team>
 
-    fun findByMembersStudentIdContaining(memberStudentId: Long): List<Team>
+    fun findByMembersStudentIdContaining(memberStudentId: Int): List<Team>
 
     fun findByDormitoryId(dormitoryId: Int): List<Team>
 
@@ -20,13 +20,15 @@ interface TeamRepo : CrudRepository<Team, Int> {
 
     fun findByLeaderId(leaderId: Int): List<Team>
 
+    fun existsByLeaderId(leaderId: Int): Boolean
+
     //no need to implement pre-declared function findAll(): List<Team>
     fun findAll(pageable: Pageable): Page<Team>
 }
 
 fun TeamRepo.newTeam(leader: Student, name: String = "${leader.name}'s Team") = Team(leader, name).also { save(it) }
 
-fun TeamRepo.findTeamStudentBelongTo(studentId: Int) = findByMembersIdContaining(studentId).firstOrNull()
+fun TeamRepo.findTeamStudentBelongTo(studentId: Int) = findAll().find { it.members.any { it.id == studentId } }
 
 fun TeamRepo.findTeamDormitoryIsFavourite(dormitoryId: Int) = findByFavoritesIdContaining(dormitoryId)
 

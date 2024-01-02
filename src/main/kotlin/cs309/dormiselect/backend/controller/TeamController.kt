@@ -10,7 +10,6 @@ import cs309.dormiselect.backend.data.message.MessageSendDto
 import cs309.dormiselect.backend.data.team.TeamCreateDto
 import cs309.dormiselect.backend.data.team.TeamJoinDto
 import cs309.dormiselect.backend.domain.Dormitory
-import cs309.dormiselect.backend.domain.Team
 import cs309.dormiselect.backend.domain.TeamJoinRequest
 import cs309.dormiselect.backend.domain.TeamMessage
 import cs309.dormiselect.backend.domain.account.Account
@@ -20,7 +19,6 @@ import cs309.dormiselect.backend.domain.account.Teacher
 import cs309.dormiselect.backend.repo.*
 import org.springframework.data.domain.PageRequest
 import org.springframework.web.bind.annotation.*
-import java.awt.print.Pageable
 import java.sql.Timestamp
 
 @RestController
@@ -39,9 +37,9 @@ class TeamController(
         val resultPage = teamRepo.findAll(pageable)
 
         if (pageInfo.page > resultPage.totalPages) {
-            return RestResponse.fail(404, "Error: Requested page number is too large")
+            return TeamListDto(resultPage.totalPages, pageInfo.page, pageInfo.pageSize, listOf()).asRestResponse()
         }
-        val teamList = TeamListDto(resultPage.totalPages,pageInfo.page,pageInfo.pageSize,resultPage.content)
+        val teamList = TeamListDto(resultPage.totalPages, pageInfo.page, pageInfo.pageSize, resultPage.content)
         return teamList.asRestResponse()
     }
 
@@ -179,21 +177,19 @@ class TeamController(
     fun createTeam(
         @CurrentAccount account: Account,
         @RequestBody teamCreateDto: TeamCreateDto,
-    ): RestResponse<Any?>{
-        if(account is Student){
-            val hasTeam = teamRepo.findByLeaderId(account.id!!)
-            if(hasTeam==null){
-            TODO("No create twice")
+    ): RestResponse<Any?> {
+        if (account is Student) {
+            require(teamRepo.findTeamStudentBelongTo(account) == null) {
+                "you have already joined a team"
             }
             val team = teamRepo.newTeam(account, teamCreateDto.name)
             team.apply {
-                this.maxSize = teamCreateDto.maxSize
-                this.introduction = teamCreateDto.introduction
-                this.recruiting = teamCreateDto.recruiting
+                maxSize = teamCreateDto.maxSize
+                introduction = teamCreateDto.introduction
+                recruiting = teamCreateDto.recruiting
             }
-            teamRepo.save(team)
         }
 
-        return RestResponse.success(null,"Successfully create a team")
+        return RestResponse.success(null, "Successfully create a team")
     }
 }

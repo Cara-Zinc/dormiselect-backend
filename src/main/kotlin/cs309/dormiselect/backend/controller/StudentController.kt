@@ -9,7 +9,6 @@ import cs309.dormiselect.backend.data.dormitory.*
 import cs309.dormiselect.backend.data.student.StudentInfoDto
 import cs309.dormiselect.backend.data.student.StudentListDto
 import cs309.dormiselect.backend.domain.Announcement
-import cs309.dormiselect.backend.domain.Comment
 import cs309.dormiselect.backend.domain.Dormitory
 import cs309.dormiselect.backend.domain.account.Account
 import cs309.dormiselect.backend.domain.account.Student
@@ -123,15 +122,15 @@ class StudentController(
         val student = studentRepo.findById(account.id!!)
             .getOrElse {return RestResponse.fail(404,"The id is not in the database") }
         student.apply{
-            bedTime = studentInfoDto.bedTime
-            age = studentInfoDto.age
-            qq = studentInfoDto.qq
-            email = studentInfoDto.email
-            department = studentInfoDto.department
-            major = studentInfoDto.major
-            wechat = studentInfoDto.wechat
-            wakeUpTime = studentInfoDto.wakeUpTime
-            telephone = studentInfoDto.telephone
+            bedTime = studentInfoDto.bedTime ?: ""
+            age = studentInfoDto.age ?: 0
+            qq = studentInfoDto.qq ?: ""
+            email = studentInfoDto.email ?: ""
+            department = studentInfoDto.department ?: ""
+            major = studentInfoDto.major ?: ""
+            wechat = studentInfoDto.wechat ?: ""
+            wakeUpTime = studentInfoDto.wakeUpTime ?: ""
+            telephone = studentInfoDto.telephone ?: ""
             hobbies.clear()
             hobbies += studentInfoDto.hobbies
         }

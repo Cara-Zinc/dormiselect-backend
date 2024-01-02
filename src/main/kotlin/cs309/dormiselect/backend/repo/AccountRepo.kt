@@ -15,7 +15,7 @@ interface AccountRepo : CrudRepository<Account, Int> {
 }
 
 fun AccountRepo.newStudent(
-    studentId: Long, name: String, password: String, gender: Student.Gender
+    studentId: Int, name: String, password: String, gender: Student.Gender
 ): Student {
     return Student(studentId, name, password, gender).also { save(it) }
 }

@@ -5,7 +5,9 @@ import cs309.dormiselect.backend.domain.account.Administrator
 import cs309.dormiselect.backend.domain.account.Student
 import cs309.dormiselect.backend.domain.account.Teacher
 import cs309.dormiselect.backend.repo.AccountRepo
-import org.springframework.beans.factory.annotation.Autowired
+import cs309.dormiselect.backend.repo.AdministratorRepo
+import cs309.dormiselect.backend.repo.StudentRepo
+import cs309.dormiselect.backend.repo.TeacherRepo
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod
@@ -32,7 +34,12 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 
 @Configuration
 @EnableWebSecurity
-private class Security(@Autowired val accountRepo: AccountRepo) {
+private class Security(
+    val accountRepo: AccountRepo,
+    val studentRepo: StudentRepo,
+    val teacherRepo: TeacherRepo,
+    val administratorRepo: AdministratorRepo,
+) {
     private fun Account.asUserDetails() = object : UserDetails {
         override fun getAuthorities() = buildSet {
             add(SimpleGrantedAuthority("Account"))
@@ -67,7 +74,16 @@ private class Security(@Autowired val accountRepo: AccountRepo) {
 
     @Bean
     fun customUserDetailService() = UserDetailsService {
-        accountRepo.findByName(it)?.asUserDetails() ?: throw UsernameNotFoundException("User $it not found.")
+        it.toIntOrNull()?.let {
+            (
+                    studentRepo.findByStudentId(it)
+                        ?: teacherRepo.findByTeacherId(it)
+                        ?: administratorRepo.findByAdministratorId(it)
+                    )?.let { return@UserDetailsService it.asUserDetails() }
+        }
+
+        return@UserDetailsService accountRepo.findByName(it)?.asUserDetails()
+            ?: throw UsernameNotFoundException("User $it not found.")
     }
 
     @Bean

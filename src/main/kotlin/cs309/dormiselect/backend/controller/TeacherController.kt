@@ -71,7 +71,7 @@ class TeacherController(
 
     @GetMapping("/student/list")
     fun viewStudentList(
-        @RequestBody pageInfo: PageInfo,
+        @ModelAttribute pageInfo: PageInfo,
     ): RestResponse<Any?> {
         val page = pageInfo.page
         val pageSize = pageInfo.pageSize
@@ -191,17 +191,21 @@ class TeacherController(
             ?: return RestResponse.fail(404, "Can not find the student in the database")
 
         student.apply {
-            bedTime = studentInfoDto.bedTime
-            age = studentInfoDto.age
-            qq = studentInfoDto.qq
-            email = studentInfoDto.email
-            department = studentInfoDto.department
-            major = studentInfoDto.major
-            wechat = studentInfoDto.wechat
-            wakeUpTime = studentInfoDto.wakeUpTime
-            telephone = studentInfoDto.telephone
+            bedTime = studentInfoDto.bedTime ?: ""
+            age = studentInfoDto.age ?: 0
+            qq = studentInfoDto.qq ?: ""
+            email = studentInfoDto.email ?: ""
+            department = studentInfoDto.department ?: ""
+            major = studentInfoDto.major ?: ""
+            wechat = studentInfoDto.wechat ?: ""
+            wakeUpTime = studentInfoDto.wakeUpTime ?: ""
+            telephone = studentInfoDto.telephone ?: ""
             hobbies.clear()
             hobbies.addAll(studentInfoDto.hobbies)
+
+            if (password.isNotBlank()) {
+                password = studentInfoDto.password
+            }
         }
         return RestResponse.success(null, "Edit student info Successfully")
     }
@@ -303,7 +307,7 @@ class TeacherController(
     ): RestResponse<Any?> {
         val (teamId, studentId) = body
         val team = teamRepo.findById(teamId).getOrElse { return RestResponse.fail(404, "Team $teamId does not exist") }
-        val teamFind = teamRepo.findByMembersStudentIdContaining(studentId).firstOrNull()
+        val teamFind = teamRepo.findTeamStudentBelongTo(studentId)
             ?: return RestResponse.fail(404, "Student $studentId does not join any team!")
         if (teamFind.id == team.id) {
             team.members.removeIf { student -> student.studentId == studentId }
