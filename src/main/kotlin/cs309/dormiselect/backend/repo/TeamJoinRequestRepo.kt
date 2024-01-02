@@ -4,11 +4,15 @@ import cs309.dormiselect.backend.domain.Team
 import cs309.dormiselect.backend.domain.TeamJoinRequest
 import cs309.dormiselect.backend.domain.account.Student
 import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.CrudRepository
 
 interface TeamJoinRequestRepo : CrudRepository<TeamJoinRequest, Int> {
     fun findAllByTeamId(teamId: Int): List<TeamJoinRequest>
-    fun findAllByStudentId(studentId: Int, pageable: org.springframework.data.domain.Pageable): Page<TeamJoinRequest>
+
+    fun findAllByTeamId(teamId: Int, pageable: Pageable): Page<TeamJoinRequest>
+
+    fun findAllByStudentId(studentId: Int, pageable: Pageable): Page<TeamJoinRequest>
     fun removeAllByStudentId(studentId: Int)
     fun findByTeamIdAndStudentId(teamId: Int, studentId: Int): TeamJoinRequest?
     fun findByTeamIdAndStudentIdAndState(teamId: Int, studentId: Int, state: TeamJoinRequest.State): TeamJoinRequest?

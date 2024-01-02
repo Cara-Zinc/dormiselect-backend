@@ -4,7 +4,6 @@ import cs309.dormiselect.backend.config.CurrentAccount
 import cs309.dormiselect.backend.data.*
 import cs309.dormiselect.backend.data.message.MessageQueryDto
 import cs309.dormiselect.backend.data.message.MessageSendDto
-import cs309.dormiselect.backend.data.team.ApplyListDto
 import cs309.dormiselect.backend.data.team.TeamCreateDto
 import cs309.dormiselect.backend.data.team.TeamJoinDto
 import cs309.dormiselect.backend.domain.Dormitory
@@ -139,18 +138,20 @@ class TeamController(
     @GetMapping("/request/list")
     fun listAllJoinRequestForTeam(
         @CurrentAccount account: Account,
-        @RequestParam pageInfo: PageInfo,
-    ): RestResponse<List<TeamJoinRequest>?> {
+        @ModelAttribute pageInfo: PageInfo,
+    ): RestResponse<PageResult<TeamJoinRequest>?> {
+        val pageable = PageRequest.of(pageInfo.page - 1, pageInfo.pageSize)
         val teamId = teamRepo.findByLeaderId(account.id!!).firstOrNull()?.id
         return when (account) {
             is Teacher, is Administrator -> teamJoinRequestRepo.findAllByTeamId(
-                teamId ?: throw IllegalArgumentException("team id is required")
-            )
+                teamId ?: throw IllegalArgumentException("team id is required"),
+                pageable
+            ).toPageResult()
 
             is Student -> {
                 val team = teamRepo.findTeamStudentLeads(account)
                     ?: throw IllegalArgumentException("you are not the leader of any team")
-                teamJoinRequestRepo.findAllByTeamId(team.id!!)
+                teamJoinRequestRepo.findAllByTeamId(team.id!!, pageable).toPageResult()
             }
 
             else -> throw IllegalArgumentException("account type not supported")
