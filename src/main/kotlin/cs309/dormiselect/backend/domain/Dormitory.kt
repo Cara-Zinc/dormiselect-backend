@@ -22,5 +22,5 @@ class Dormitory(
 
     // @OneToMany(orphanRemoval = true)
     // val comments: MutableList<Comment> = mutableListOf()
-    val datetime: Timestamp? = null
+    var datetime: Timestamp? = null
 }

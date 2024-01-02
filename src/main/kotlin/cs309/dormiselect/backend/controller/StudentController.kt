@@ -2,7 +2,6 @@ package cs309.dormiselect.backend.controller
 
 import cs309.dormiselect.backend.config.CurrentAccount
 import cs309.dormiselect.backend.data.PageInfo
-import cs309.dormiselect.backend.data.PageInformation
 import cs309.dormiselect.backend.data.RestResponse
 import cs309.dormiselect.backend.data.asRestResponse
 import cs309.dormiselect.backend.data.dormitory.*
@@ -91,7 +90,7 @@ class StudentController(
     }
 
     @GetMapping("/announcement/list")
-    fun viewAnnouncement( @ModelAttribute body: PageInformation): RestResponse<Any?> {
+    fun viewAnnouncement( @ModelAttribute body: PageInfo): RestResponse<Any?> {
         val page = PageRequest.of(body.page, body.pageSize)
         val result = announcementRepo.findAll(page)
         return object {

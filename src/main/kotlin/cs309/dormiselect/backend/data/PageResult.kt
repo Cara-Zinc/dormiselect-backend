@@ -21,3 +21,5 @@ fun <T> Iterable<T>.toPageResult(pageable: Pageable): PageResult<T> = PageResult
     chunked(pageable.pageSize).getOrNull(pageable.pageNumber) ?: listOf()
 )
 
+fun <T> Sequence<T>.toPageResult(pageable: Pageable) = asIterable().toPageResult(pageable)
+

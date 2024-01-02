@@ -11,7 +11,7 @@ import java.sql.Timestamp
 class Announcement(
     @ManyToOne(optional = false) val author: Account,
     var content: String,
-    var receiver: Receiver = Receiver.ALL,
+    var receiver: Receiver = Receiver.TEACHER_AND_STUDENT,
     var priority: Priority = Priority.NORMAL,
 ) {
     @Id
@@ -23,6 +23,6 @@ class Announcement(
         NORMAL, URGENT, EXTRA_URGENT
     }
     enum class Receiver{
-        TEACHER,STUDENT,ALL
+        TEACHER,STUDENT,TEACHER_AND_STUDENT
     }
 }

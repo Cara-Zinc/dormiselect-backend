@@ -39,6 +39,10 @@ class Team(
 
     val size get() = members.size
 
+    val full get() = size == maxSize
+
+    val gender get() = leader.gender
+
     enum class State {
         RECRUITING, NOT_RECRUITING, FULL
     }

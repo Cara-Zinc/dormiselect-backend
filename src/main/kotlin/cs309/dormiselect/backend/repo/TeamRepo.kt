@@ -25,8 +25,13 @@ interface TeamRepo : CrudRepository<Team, Int> {
 
     //no need to implement pre-declared function findAll(): List<Team>
     fun findAll(pageable: Pageable): Page<Team>
+
+    fun findAllByDormitoryNotNull(pageable: Pageable): Page<Team>
+
     @Query("SELECT t FROM Team t JOIN t.members m WHERE m.studentId = :studentId")
     fun findStudentBelong(studentId: Int): Team?
+
+    fun existsByDormitoryId(dormitoryId: Int): Boolean
 }
 
 fun TeamRepo.newTeam(leader: Student, name: String = "${leader.name}'s Team") = Team(leader, name).also { save(it) }

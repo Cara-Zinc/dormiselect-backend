@@ -8,5 +8,5 @@ class Teacher(
     password: String,
     val teacherId:Int
 ) : Account(name, password) {
-    var buildingInCharge: String? = null
+    var buildingInCharge: Int? = null
 }

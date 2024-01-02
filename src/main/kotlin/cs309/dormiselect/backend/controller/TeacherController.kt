@@ -8,7 +8,6 @@ import cs309.dormiselect.backend.data.student.StudentListDto
 import cs309.dormiselect.backend.data.student.StudentUploadDto
 import cs309.dormiselect.backend.data.teacher.AnnouncementPublishDto
 import cs309.dormiselect.backend.data.teacher.TeamMemberRemoveDto
-import cs309.dormiselect.backend.domain.Announcement
 import cs309.dormiselect.backend.domain.Dormitory
 import cs309.dormiselect.backend.domain.Team
 import cs309.dormiselect.backend.domain.account.Account
@@ -34,36 +33,29 @@ class TeacherController(
 ) {
     @GetMapping("/select/list")
     fun viewTeamSelection(
-        @RequestBody body: PageInformation,
-    ): RestResponse<Any?> {
+        @ModelAttribute body: PageInfo,
+    ): RestResponse<PageResult<Any>?> {
         val (page, pageSize) = body
         val pageable: Pageable = PageRequest.of(page - 1, pageSize)
-        val resultPage: Page<Team> = teamRepo.findAll(pageable)
+        val resultPage: Page<Team> = teamRepo.findAllByDormitoryNotNull(pageable)
 
-        return object {
-            val total = resultPage.totalPages
-            val page = page
-            val pageSize = pageSize
-            val rows = resultPage.asSequence()
-                .filterNotNull()
-                .map {
+        return resultPage.map {
+            object {
+                val name = it.name
+                val leaderId = it.leader.studentId
+                val leaderName = it.leader.name
+                val introduction = it.introduction
+                val membersId = it.members.map(Student::studentId)
+                val membersName = it.members.map(Student::name)
+                val dormitory = it.dormitory?.let { dorm ->
                     object {
-                        val name = it.name
-                        val leaderId = it.leader.studentId
-                        val leaderName = it.leader.name
-                        val introduction = it.introduction
-                        val membersId = it.members.map(Student::studentId)
-                        val membersName = it.members.map(Student::name)
-                        val dormitory = it.dormitory?.let { dorm ->
-                            object {
-                                val zoneId = dorm.zoneId
-                                val buildingId = dorm.buildingId
-                                val roomId = dorm.roomId
-                            }
-                        }
+                        val zoneId = dorm.zoneId
+                        val buildingId = dorm.buildingId
+                        val roomId = dorm.roomId
                     }
                 }
-        }.asRestResponse()
+            }
+        }.toPageResult().asRestResponse()
     }
 
     @GetMapping("/student/list")
@@ -204,6 +196,7 @@ class TeacherController(
                 password = studentInfoDto.password
             }
         }
+        studentRepo.save(student)
         return RestResponse.success(null, "Edit student info Successfully")
     }
 
@@ -236,7 +229,7 @@ class TeacherController(
             return RestResponse.fail(404, "Error: Requested page number is too large")
         }
         val rows = mutableListOf<Any>()
-        for(dorm in resultPage.content){
+        for (dorm in resultPage.content) {
             val comments = commentRepo.findByDormitoryId(dorm.id!!)
             rows.add(object {
                 val id = dorm.id
@@ -261,9 +254,16 @@ class TeacherController(
 
 
     @PostMapping("/select/time")
-    fun editSelectionTime(): RestResponse<Any?> {
-        //TODO change all dormitories' selection time according to zoneId and gender
-        return RestResponse.fail(404, "")
+    fun editSelectionTime(
+        @RequestBody dormiSelectTimeDto: DormiSelectTimeDto
+    ): RestResponse<Any?> {
+
+        val dormList = dormitoryRepo.findByZoneIdAndGender(dormiSelectTimeDto.zoneId, dormiSelectTimeDto.gender)
+        for (dormitory in dormList) {
+            dormitory.apply { this.datetime = dormiSelectTimeDto.datetime }
+            dormitoryRepo.save(dormitory)
+        }
+        return RestResponse.success(null)
     }
 
     @GetMapping("/student/information/form")
@@ -320,18 +320,14 @@ class TeacherController(
         @CurrentAccount account: Account,
         @RequestBody body: AnnouncementPublishDto
     ): RestResponse<Any?> {
-        announcementRepo.newAnnouncement(account, body.receiver, body.priority, body.content)
+        announcementRepo.newAnnouncement(account, body.receiver, body.priority, body.announcement)
         return RestResponse.success(null, "Announcement published")
     }
 
-    @GetMapping("/announcement/list")
+    @GetMapping("/announcement")
     fun viewAnnouncement(
-        @RequestBody pageInfo: PageInfo,
     ): RestResponse<Any?> {
-        val pageable: Pageable = PageRequest.of(pageInfo.page - 1, pageInfo.pageSize)
-        val resultPage: Page<Announcement> = announcementRepo.findAll(pageable)
-        return RestResponse.success(resultPage.content, "Return announcement list page ${pageInfo.pageSize}")
+        return announcementRepo.findAll().asRestResponse()
     }
-
 
 }

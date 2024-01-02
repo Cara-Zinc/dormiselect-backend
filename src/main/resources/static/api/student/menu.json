@@ -13,24 +13,14 @@
                 "component": "sustech"
             },
             {
-                "name": "personal information",
-                "path": "",
+                "name": "user",
+                "path": "/user",
                 "meta": {
                     "title": "个人信息",
                     "icon": "el-icon-user",
                     "type": "menu"
                 },
-                "children": [
-                    {
-                        "name": "userCenter",
-                        "path": "/usercenter",
-                        "meta": {
-                            "title": "账号信息",
-                            "icon": "el-icon-user"
-                        },
-                        "component": "userCenter"
-                    }
-                ]
+                "component": "user"
             },
             {
                 "name": "dormitory",

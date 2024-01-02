@@ -30,6 +30,8 @@ interface DormitoryRepo : CrudRepository<Dormitory, Int> {
     @Param("buildingId") buildingId: Int
     ): Dormitory?
 
+    fun findByZoneIdAndGender(zoneId: Int, gender: Student.Gender): List<Dormitory>
+
 }
 
 fun DormitoryRepo.newDormitory(roomId: Int, zoneId: Int, size: Int, buildingId: Int, gender: Student.Gender,info: String) =

@@ -5,5 +5,5 @@ import cs309.dormiselect.backend.domain.Announcement
 data class AnnouncementPublishDto(
     val receiver: Announcement.Receiver,
     val priority: Announcement.Priority,
-    val content: String
+    val announcement: String
 )

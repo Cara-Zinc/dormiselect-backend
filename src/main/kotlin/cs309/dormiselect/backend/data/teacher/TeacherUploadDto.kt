@@ -4,4 +4,5 @@ data class TeacherUploadDto(
     val teacherId: Int,
     val name: String,
     val password: String,
+    val buildingInCharge: Int,
 )

@@ -100,6 +100,9 @@ class TeamController(
         }
 
         val team = teamRepo.findById(teamJoinDto.teamId).orElseThrow { IllegalArgumentException("team not found") }
+        require(account.gender == team.gender) {
+            "You can't apply for a team which is different form your gender."
+        }
         teamJoinRequestRepo.newRequest(teamRepo, team, account, teamJoinDto.info)
 
         return RestResponse.success(null, "request sent")
@@ -254,6 +257,9 @@ class TeamController(
         require(team.favorites.none { it.id == dormitory.id }) {
             "You have already added this dormitory."
         }
+        require(dormitory.gender == team.gender) {
+            "You can't select a dormitory which is different from your gender!"
+        }
 
         team.favorites += dormitory
         teamRepo.save(team)
@@ -283,11 +289,24 @@ class TeamController(
 
         val team =
             teamRepo.findTeamStudentLeads(account) ?: throw IllegalArgumentException("You are not leading any team.")
+
+        require(team.full) {
+            "Your team is not full."
+        }
+
+        require(!teamRepo.existsByDormitoryId(body.id)) {
+            "This dormitory is already been occupied!"
+        }
         val dormitory = dormitoryRepo.findById(body.id).orElseThrow { IllegalArgumentException("Dormitory not found.") }
         require(team.dormitory?.id != dormitory.id) {
             "You have already selected this dormitory!"
         }
+        require(dormitory.gender == team.gender) {
+            "You can't select a dormitory which is different from your gender!"
+        }
+
         team.dormitory = dormitory
+        team.recruiting = false
         teamRepo.save(team)
 
         return RestResponse.success(null, "Successfully selected.")
