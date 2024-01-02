@@ -13,6 +13,26 @@
                 "component": "sustech"
             },
             {
+                "name": "personal information",
+                "path": "",
+                "meta": {
+                    "title": "个人信息",
+                    "icon": "el-icon-user",
+                    "type": "menu"
+                },
+                "children": [
+                    {
+                        "name": "userCenter",
+                        "path": "/usercenter",
+                        "meta": {
+                            "title": "账号信息",
+                            "icon": "el-icon-user"
+                        },
+                        "component": "userCenter"
+                    }
+                ]
+            },
+            {
                 "name": "dormitory",
                 "path": "/dormitory",
                 "meta": {
@@ -89,6 +109,15 @@
                             "icon": "el-icon-Moon"
                         },
                         "component": "dormitory/search"
+                    },
+                    {
+                        "path": "/dormitory/change",
+                        "name": "dormitoryChange",
+                        "meta": {
+                            "title": "宿舍交换",
+                            "icon": "el-icon-Refresh"
+                        },
+                        "component": "dormitory/change"
                     }
                 ]
             },
@@ -149,60 +178,31 @@
                 ]
             },
             {
-                "name": "personal information",
-                "path": "",
-                "meta": {
-                    "title": "个人信息",
-                    "icon": "el-icon-user",
-                    "type": "menu"
-                },
-                "children": [
-                    {
-                        "name": "userCenter",
-                        "path": "/usercenter",
-                        "meta": {
-                            "title": "账号信息",
-                            "icon": "el-icon-user"
-                        },
-                        "component": "userCenter"
-                    }
-                ]
-            },
-            {
                 "name": "information",
-                "path": "",
+                "path": "/message",
                 "meta": {
-                    "title": "消息通知",
+                    "title": "消息信息",
                     "icon": "el-icon-bell",
                     "type": "menu"
                 },
                 "children": [
                     {
-                        "name": "",
-                        "path": "",
+                        "name": "private message",
+                        "path": "/message/private",
                         "meta": {
                             "title": "私信消息",
                             "icon": "el-icon-ChatRound"
                         },
-                        "component": ""
+                        "component": "message/private"
                     },
                     {
-                        "name": "",
-                        "path": "",
+                        "name": "group message",
+                        "path": "/message/group",
                         "meta": {
                             "title": "队伍消息",
                             "icon": "el-icon-ChatSquare"
                         },
-                        "component": ""
-                    },
-                    {
-                        "name": "",
-                        "path": "",
-                        "meta": {
-                            "title": "评论信息",
-                            "icon": "el-icon-ChatLineRound"
-                        },
-                        "component": ""
+                        "component": "message/group"
                     }
                 ]
             },
@@ -210,7 +210,7 @@
                 "path": "/announcement/view",
                 "name": "view",
                 "meta": {
-                    "title": "查看公告",
+                    "title": "公告信息",
                     "icon": "el-icon-Bell",
                     "type": "menu"
                 },

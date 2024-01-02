@@ -6,8 +6,8 @@ import java.sql.Timestamp
 
 @Entity
 class TeamJoinRequest(
-    @ManyToOne(optional = false, cascade = [CascadeType.ALL]) val student: Student,
-    @ManyToOne(optional = false, cascade = [CascadeType.ALL]) val team: Team,
+    @ManyToOne(optional = false) val student: Student,
+    @ManyToOne(optional = false) val team: Team,
     val info: String,
 ) {
     @Id
@@ -39,6 +39,7 @@ class TeamJoinRequest(
         }
 
         state = State.CANCELLED
+        println(state)
     }
 
     enum class State {

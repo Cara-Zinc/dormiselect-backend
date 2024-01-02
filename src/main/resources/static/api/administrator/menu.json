@@ -113,35 +113,6 @@
                 ]
             },
             {
-                "name": "dormitory_change",
-                "path": "/dormChange",
-                "meta": {
-                    "title": "修改宿舍信息",
-                    "icon": "el-icon-refresh-right",
-                    "type": "menu"
-                },
-                "children": [
-                    {
-                        "name": "dorm_upload",
-                        "path": "/dormChange/upload",
-                        "meta": {
-                            "title": "上传宿舍信息",
-                            "icon": "el-icon-top"
-                        },
-                        "component": "dormChange/upload"
-                    },
-                    {
-                        "name": "dorm_edit",
-                        "path": "/dormChange/edit",
-                        "meta": {
-                            "title": "修改已有宿舍信息",
-                            "icon": "el-icon-edit"
-                        },
-                        "component": "dormChange/edit"
-                    }
-                ]
-            },
-            {
                 "name": "manage student",
                 "path": "/manageStu",
                 "meta": {
@@ -196,6 +167,35 @@
                             "icon": "el-icon-Top"
                         },
                         "component": "manageTeacher/upload"
+                    }
+                ]
+            },
+            {
+                "name": "dormitory_change",
+                "path": "/dormChange",
+                "meta": {
+                    "title": "修改宿舍信息",
+                    "icon": "el-icon-refresh-right",
+                    "type": "menu"
+                },
+                "children": [
+                    {
+                        "name": "dorm_upload",
+                        "path": "/dormChange/upload",
+                        "meta": {
+                            "title": "上传宿舍信息",
+                            "icon": "el-icon-top"
+                        },
+                        "component": "dormChange/upload"
+                    },
+                    {
+                        "name": "dorm_edit",
+                        "path": "/dormChange/edit",
+                        "meta": {
+                            "title": "修改已有宿舍信息",
+                            "icon": "el-icon-edit"
+                        },
+                        "component": "dormChange/edit"
                     }
                 ]
             },

@@ -93,39 +93,10 @@
                 ]
             },
             {
-                "name": "Announcement",
-                "path": "/announcement",
-                "meta": {
-                    "title": "公告",
-                    "icon": "el-icon-Bell",
-                    "type": "menu"
-                },
-                "children": [
-                    {
-                        "name": "publish",
-                        "path": "/announcement/publish",
-                        "meta": {
-                            "title": "发送公告",
-                            "icon": "el-icon-EditPen"
-                        },
-                        "component": "announcement/publish"
-                    },
-                    {
-                        "name": "view",
-                        "path": "/announcement/view",
-                        "meta": {
-                            "title": "查看公告",
-                            "icon": "el-icon-Search"
-                        },
-                        "component": "announcement/view"
-                    }
-                ]
-            },
-            {
                 "name": "dormitory_change",
                 "path": "/dormChange",
                 "meta": {
-                    "title": "修改宿舍信息",
+                    "title": "宿舍管理",
                     "icon": "el-icon-refresh-right",
                     "type": "menu"
                 },
@@ -143,7 +114,7 @@
                         "name": "dorm_edit",
                         "path": "/dormChange/edit",
                         "meta": {
-                            "title": "修改已有宿舍信息",
+                            "title": "修改宿舍信息",
                             "icon": "el-icon-edit"
                         },
                         "component": "dormChange/edit"
@@ -154,20 +125,11 @@
                 "name": "manage student",
                 "path": "/manageStu",
                 "meta": {
-                    "title": "管理学生",
+                    "title": "学生管理",
                     "icon": "el-icon-user",
                     "type": "menu"
                 },
                 "children": [
-                    {
-                        "path": "/manageStu/edit",
-                        "name": "editStu",
-                        "meta": {
-                            "title": "修改学生信息",
-                            "icon": "el-icon-folder"
-                        },
-                        "component": "manageStu/edit"
-                    },
                     {
                         "path": "/manageStu/upload",
                         "name": "uploadStu",
@@ -176,6 +138,15 @@
                             "icon": "el-icon-collection"
                         },
                         "component": "manageStu/upload"
+                    },
+                    {
+                        "path": "/manageStu/edit",
+                        "name": "editStu",
+                        "meta": {
+                            "title": "修改学生信息",
+                            "icon": "el-icon-folder"
+                        },
+                        "component": "manageStu/edit"
                     }
                 ]
             },
@@ -183,7 +154,7 @@
                 "name": "manage dormitory selection",
                 "path": "/manageSelect",
                 "meta": {
-                    "title": "设置选择时间",
+                    "title": "宿舍选择管理",
                     "icon": "el-icon-timer",
                     "type": "menu"
                 },
@@ -192,7 +163,7 @@
                         "path": "/manageSelect/time",
                         "name": "editSelect",
                         "meta": {
-                            "title": "修改选房时间",
+                            "title": "修改宿舍选择时间",
                             "icon": "el-icon-MagicStick"
                         },
                         "component": "manageSelect/time"
@@ -214,6 +185,35 @@
                             "icon": "el-icon-monitor"
                         },
                         "component": "manageSelect/export"
+                    }
+                ]
+            },
+            {
+                "name": "Announcement",
+                "path": "/announcement",
+                "meta": {
+                    "title": "公告管理",
+                    "icon": "el-icon-Bell",
+                    "type": "menu"
+                },
+                "children": [
+                    {
+                        "name": "publish",
+                        "path": "/announcement/publish",
+                        "meta": {
+                            "title": "发送公告",
+                            "icon": "el-icon-EditPen"
+                        },
+                        "component": "announcement/publish"
+                    },
+                    {
+                        "name": "view",
+                        "path": "/announcement/view",
+                        "meta": {
+                            "title": "查看公告",
+                            "icon": "el-icon-Search"
+                        },
+                        "component": "announcement/view"
                     }
                 ]
             },

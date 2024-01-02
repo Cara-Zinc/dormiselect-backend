@@ -1,12 +1,10 @@
 package cs309.dormiselect.backend.controller;
 
 import cs309.dormiselect.backend.config.CurrentAccount
-import cs309.dormiselect.backend.data.PageInfo
-import cs309.dormiselect.backend.data.RestResponse
-import cs309.dormiselect.backend.data.TeamListDto
-import cs309.dormiselect.backend.data.asRestResponse
+import cs309.dormiselect.backend.data.*
 import cs309.dormiselect.backend.data.message.MessageQueryDto
 import cs309.dormiselect.backend.data.message.MessageSendDto
+import cs309.dormiselect.backend.data.team.ApplyListDto
 import cs309.dormiselect.backend.data.team.TeamCreateDto
 import cs309.dormiselect.backend.data.team.TeamJoinDto
 import cs309.dormiselect.backend.domain.Dormitory
@@ -18,6 +16,7 @@ import cs309.dormiselect.backend.domain.account.Student
 import cs309.dormiselect.backend.domain.account.Teacher
 import cs309.dormiselect.backend.repo.*
 import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
 import org.springframework.web.bind.annotation.*
 import java.sql.Timestamp
 
@@ -33,7 +32,7 @@ class TeamController(
     fun listAllTeam(
         @ModelAttribute pageInfo: PageInfo
     ): RestResponse<Any?> {
-        val pageable: org.springframework.data.domain.Pageable = PageRequest.of(pageInfo.page - 1, pageInfo.pageSize)
+        val pageable: Pageable = PageRequest.of(pageInfo.page - 1, pageInfo.pageSize)
         val resultPage = teamRepo.findAll(pageable)
 
         if (pageInfo.page > resultPage.totalPages) {
@@ -105,35 +104,44 @@ class TeamController(
     @GetMapping("/apply/list")
     fun listAllMyJoinRequest(
         @CurrentAccount account: Account,
-        @RequestParam studentId: Int?
-    ): RestResponse<List<TeamJoinRequest>?> {
+        @ModelAttribute pageInfo: PageInfo,
+    ): RestResponse<Any?> {
+        val pageable: Pageable = PageRequest.of(pageInfo.page - 1, pageInfo.pageSize)
         return when (account) {
             is Teacher, is Administrator -> teamJoinRequestRepo.findAllByStudentId(
-                studentId ?: throw IllegalArgumentException("student id is required")
+                account.id ?: throw IllegalArgumentException("student id is required"), pageable
             )
 
-            is Student -> teamJoinRequestRepo.findAllByStudentId(account.id!!)
+            is Student -> object {
+                val total = teamJoinRequestRepo.findAllByStudentId(account.id!!, pageable).totalPages
+                val page = pageInfo.page
+                val pageSize = pageInfo.pageSize
+                val rows = teamJoinRequestRepo.findAllByStudentId(account.id!!, pageable).content
+            }
             else -> throw IllegalArgumentException("account type not supported")
         }.asRestResponse()
+
+
     }
 
-    @PostMapping("/apply/{requestId}/cancel")
-    fun cancelJoinTeam(@CurrentAccount account: Account, @PathVariable requestId: Int): RestResponse<Any?> {
+    @PostMapping("/cancel-apply")
+    fun cancelJoinTeam(@CurrentAccount account: Account, @RequestBody integerWrapper: IntegerWrapper): RestResponse<Any?> {
         val request =
-            teamJoinRequestRepo.findById(requestId).orElseThrow { IllegalArgumentException("request not found") }
-        if (request.student != account) {
+            teamJoinRequestRepo.findById(integerWrapper.id).orElseThrow { IllegalArgumentException("request not found") }
+        if (request.student.id != account.id) {
             return RestResponse.fail(403, "you are not the student of this request")
         }
 
-        teamJoinRequestRepo.cancelRequest(requestId)
+        teamJoinRequestRepo.cancelRequest(integerWrapper.id)
         return RestResponse.success(null, "request cancelled")
     }
 
     @GetMapping("/request/list")
     fun listAllJoinRequestForTeam(
         @CurrentAccount account: Account,
-        @RequestParam teamId: Int?
+        @RequestParam pageInfo: PageInfo,
     ): RestResponse<List<TeamJoinRequest>?> {
+        val teamId = teamRepo.findByLeaderId(account.id!!).firstOrNull()?.id
         return when (account) {
             is Teacher, is Administrator -> teamJoinRequestRepo.findAllByTeamId(
                 teamId ?: throw IllegalArgumentException("team id is required")
@@ -180,7 +188,7 @@ class TeamController(
     ): RestResponse<Any?> {
         if (account is Student) {
             require(teamRepo.findTeamStudentBelongTo(account) == null) {
-                "you have already joined a team"
+                "You have already joined a team"
             }
             val team = teamRepo.newTeam(account, teamCreateDto.name)
             team.apply {
@@ -191,5 +199,12 @@ class TeamController(
         }
 
         return RestResponse.success(null, "Successfully create a team")
+    }
+
+    @GetMapping("/info")
+    fun fetchTeamInfo(
+        @CurrentAccount account: Account
+    ): RestResponse<Any?>{
+        return teamRepo.findTeamStudentBelongTo(account.id!!).asRestResponse()
     }
 }

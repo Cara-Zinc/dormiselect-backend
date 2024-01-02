@@ -1,10 +1,7 @@
 package cs309.dormiselect.backend.controller
 
 import cs309.dormiselect.backend.config.CurrentAccount
-import cs309.dormiselect.backend.data.PageInfo
-import cs309.dormiselect.backend.data.PageInformation
-import cs309.dormiselect.backend.data.RestResponse
-import cs309.dormiselect.backend.data.asRestResponse
+import cs309.dormiselect.backend.data.*
 import cs309.dormiselect.backend.data.dormitory.*
 import cs309.dormiselect.backend.data.student.StudentInfoDto
 import cs309.dormiselect.backend.data.student.StudentListDto
@@ -210,11 +207,11 @@ class TeacherController(
         return RestResponse.success(null, "Edit student info Successfully")
     }
 
-    @PostMapping
+    @PostMapping("/student/delete")
     fun deleteStudent(
-        @RequestParam id: Int,
+        @RequestBody integerWrapper: IntegerWrapper,
     ): RestResponse<Any?> {
-        val student = studentRepo.findById(id)
+        val student = studentRepo.findById(integerWrapper.id)
             .getOrElse { return RestResponse.fail(404, "fail to find student in the database") }
         studentRepo.delete(student)
         return RestResponse.success(null, "Successfully delete a student")
