@@ -359,4 +359,70 @@ class TeamController(
 
         return RestResponse.success(null, "Successfully applied.")
     }
+
+    @GetMapping("exchange/list")
+    fun listExchangeRequest(
+        @CurrentAccount account: Account,
+        @ModelAttribute pageInfo: PageInfo
+    ): RestResponse<PageResult<DormitoryExchangeRequest>?> {
+        require(account is Student) {
+            "Only student can list exchange request."
+        }
+        val team = teamRepo.findTeamStudentLeads(account)
+            ?: throw IllegalArgumentException("You are not leading any team.")
+        val pageRequest = PageRequest.of(pageInfo.page - 1, pageInfo.pageSize)
+        return dormitoryExchangeRequestRepo.findByTeam(team).toPageResult(pageRequest).asRestResponse()
+    }
+
+    @PostMapping("exchange/decline")
+    fun declineExchangeRequest(
+        @CurrentAccount account: Account,
+        @RequestBody body: IntegerWrapper
+    ): RestResponse<Nothing?> {
+        require(account is Student) {
+            "Only student can decline exchange request."
+        }
+        val request = dormitoryExchangeRequestRepo.findById(body.id)
+            .orElseThrow { IllegalArgumentException("Request not found.") }
+        require(request.team1.leader.id == account.id || request.team2.leader.id == account.id) {
+            "You are not the leader of any team in this request."
+        }
+        require(request.state == DormitoryExchangeRequest.State.WAITING) {
+            "This request is not waiting for your approval."
+        }
+        if (request.team1.leader.id == account.id) {
+            request.approve1(false)
+        } else {
+            request.approve2(false)
+        }
+        dormitoryExchangeRequestRepo.save(request)
+
+        return RestResponse.success(null, "Successfully declined.")
+    }
+
+    @PostMapping("exchange/accept")
+    fun acceptExchangeRequest(
+        @CurrentAccount account: Account,
+        @RequestBody body: IntegerWrapper
+    ): RestResponse<Nothing?> {
+        require(account is Student) {
+            "Only student can accept exchange request."
+        }
+        val request = dormitoryExchangeRequestRepo.findById(body.id)
+            .orElseThrow { IllegalArgumentException("Request not found.") }
+        require(request.team1.leader.id == account.id || request.team2.leader.id == account.id) {
+            "You are not the leader of any team in this request."
+        }
+        require(request.state == DormitoryExchangeRequest.State.WAITING) {
+            "This request is not waiting for your approval."
+        }
+        if (request.team1.leader.id == account.id) {
+            request.approve1(true)
+        } else {
+            request.approve2(true)
+        }
+        dormitoryExchangeRequestRepo.save(request)
+
+        return RestResponse.success(null, "Successfully accepted.")
+    }
 }
