@@ -21,6 +21,7 @@ bucket4j:
   enabled: true
   filters:
     - cache-name: buckets
+      cache-key: "@securityService.username()?: getRemoteAddr()"
       http-response-body: { "code": 429,"message": "Too many requests!","data": null }
       url: .*
       rate-limits:

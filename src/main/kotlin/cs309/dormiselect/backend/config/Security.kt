@@ -29,6 +29,7 @@ import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler
 import org.springframework.security.web.session.HttpSessionEventPublisher
+import org.springframework.stereotype.Service
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 
@@ -158,3 +159,14 @@ private class Security(
 @MustBeDocumented
 @AuthenticationPrincipal(expression = "account")
 annotation class CurrentAccount
+
+@Service
+class SecurityService {
+    fun username(): String? {
+        val name = SecurityContextHolder.getContext().authentication.name
+        if (name === "anonymousUser") {
+            return null
+        }
+        return name
+    }
+}
